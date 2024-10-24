@@ -12,6 +12,7 @@ import {
   UserEntity,
   VideoEntity,
 } from './entities';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import {
       synchronize: true,
       migrations: ['src/database/migrations/*.ts'],
     }),
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
