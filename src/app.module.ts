@@ -3,7 +3,15 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { FollowingEnity, ProfileEntity, UserEntity } from './entities';
+import {
+  CommentEntity,
+  FollowingEnity,
+  PostEntity,
+  ProfileEntity,
+  ReplyEntity,
+  UserEntity,
+  VideoEntity,
+} from './entities';
 
 @Module({
   imports: [
@@ -15,7 +23,15 @@ import { FollowingEnity, ProfileEntity, UserEntity } from './entities';
       username: process.env.DATABASE_USERNAME,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      entities: [UserEntity, ProfileEntity, FollowingEnity],
+      entities: [
+        UserEntity,
+        ProfileEntity,
+        FollowingEnity,
+        PostEntity,
+        VideoEntity,
+        CommentEntity,
+        ReplyEntity,
+      ],
       synchronize: true,
       migrations: ['src/database/migrations/*.ts'],
     }),
