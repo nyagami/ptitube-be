@@ -13,4 +13,10 @@ export class UserService {
   async findOne(email: string) {
     return this.userRepository.findOneBy({ email });
   }
+  async get(id: number) {
+    return this.userRepository.findOne({
+      where: { id },
+      relations: { profile: true },
+    });
+  }
 }

@@ -20,7 +20,7 @@ export class UserEntity {
   @Column()
   password: string;
 
-  @OneToOne(() => ProfileEntity)
+  @OneToOne(() => ProfileEntity, (profile) => profile.user)
   @JoinColumn()
   profile: ProfileEntity;
 
