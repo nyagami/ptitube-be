@@ -29,4 +29,10 @@ export class AuthController {
   getProfile(@Request() req) {
     return req.user;
   }
+
+  @HttpCode(HttpStatus.OK)
+  @Get('mail')
+  sendMail() {
+    return this.authService.sendMail();
+  }
 }

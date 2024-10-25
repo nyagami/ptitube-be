@@ -15,6 +15,7 @@ import {
   VideoEntity,
 } from './entities';
 import { AuthModule } from './modules/auth/auth.module';
+import { MailerModule } from '@nestjs-modules/mailer';
 
 @Module({
   imports: [
@@ -37,6 +38,17 @@ import { AuthModule } from './modules/auth/auth.module';
       ],
       synchronize: true,
       migrations: ['src/database/migrations/*.ts'],
+    }),
+    MailerModule.forRoot({
+      transport: {
+        host: process.env.EMAIL_SERVICE,
+        secure: true,
+        port: 465,
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASSWORD,
+        },
+      },
     }),
     AuthModule,
   ],
