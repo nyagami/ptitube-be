@@ -14,11 +14,14 @@ export class UserEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ unique: true })
   email: string;
 
   @Column()
   password: string;
+
+  @Column({ default: false })
+  isActivated: boolean;
 
   @OneToOne(() => ProfileEntity, (profile) => profile.user)
   @JoinColumn()

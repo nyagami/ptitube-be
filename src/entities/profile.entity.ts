@@ -19,8 +19,8 @@ export class ProfileEntity {
   displayName: string;
 
   @Column()
-  avatarUrl: string;
+  avatarPath: string;
 
   @Column()
-  coverUrl: string;
+  coverPath: string;
 }

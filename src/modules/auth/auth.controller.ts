@@ -6,19 +6,22 @@ import {
   HttpStatus,
   Post,
   Request,
+  UploadedFiles,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { SignInDto } from './auth.dto';
+import { SignInDto, SignUpDto } from './auth.dto';
 import { AuthGuard } from './auth.guard';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiConsumes } from '@nestjs/swagger';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
   @HttpCode(HttpStatus.OK)
-  @Post('login')
+  @Post('sign-in')
   signIn(@Body() signInDto: SignInDto) {
     return this.authService.signIn(signInDto.email, signInDto.password);
   }
@@ -30,9 +33,23 @@ export class AuthController {
     return req.user;
   }
 
-  @HttpCode(HttpStatus.OK)
-  @Get('mail')
-  sendMail() {
-    return this.authService.sendMail();
+  @ApiConsumes('multipart/form-data')
+  @Post('sign-up')
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'avatar', maxCount: 1 },
+      { name: 'cover', maxCount: 1 },
+    ]),
+  )
+  signUp(
+    @Body() signUpDto: SignUpDto,
+    @UploadedFiles()
+    files: { avatar?: Express.Multer.File; cover?: Express.Multer.File },
+  ) {
+    return this.authService.signUp(
+      signUpDto,
+      files.avatar?.[0],
+      files.cover?.[0],
+    );
   }
 }

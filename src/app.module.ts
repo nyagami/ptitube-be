@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { join } from 'path';
+
 const envModule = ConfigModule.forRoot({
   isGlobal: true,
 });
@@ -16,6 +18,7 @@ import {
 } from './entities';
 import { AuthModule } from './modules/auth/auth.module';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
 @Module({
   imports: [
@@ -49,6 +52,10 @@ import { MailerModule } from '@nestjs-modules/mailer';
           pass: process.env.EMAIL_PASSWORD,
         },
       },
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'static'),
+      serveRoot: '/static',
     }),
     AuthModule,
   ],
