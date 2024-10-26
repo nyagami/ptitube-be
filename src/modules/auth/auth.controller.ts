@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignInDto, SignUpDto, SignUpVerifyDto } from './auth.dto';
-import { AuthGuard } from './auth.guard';
+import { AuthGuard } from '../../core/guards/auth.guard';
 import { ApiBearerAuth, ApiConsumes } from '@nestjs/swagger';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 

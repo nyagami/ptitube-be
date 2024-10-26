@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProfileEntity, UserEntity } from 'src/entities';
 import { saveFile } from 'src/utils/fileUtils';
@@ -46,11 +46,11 @@ export class UserService {
     avatar?: Express.Multer.File,
     cover?: Express.Multer.File,
   ) {
-    let avatarPath = '';
+    let avatarPath = undefined;
     if (avatar) {
       avatarPath = await saveFile(`avatar-${displayName}`, avatar);
     }
-    let coverPath = '';
+    let coverPath = undefined;
     if (cover) {
       coverPath = await saveFile(`cover-${displayName}`, cover);
     }
@@ -61,6 +61,30 @@ export class UserService {
     });
     await this.profileRepository.insert(profile);
     return profile;
+  }
+
+  async updateProfile(
+    userId: number,
+    displayName?: string,
+    avatar?: Express.Multer.File,
+    cover?: Express.Multer.File,
+  ) {
+    let avatarPath = undefined;
+    if (avatar) {
+      avatarPath = await saveFile(`avatar-${displayName}`, avatar);
+    }
+    let coverPath = undefined;
+    if (cover) {
+      coverPath = await saveFile(`cover-${displayName}`, cover);
+    }
+    return this.profileRepository.update(
+      { id: userId },
+      {
+        displayName: displayName || undefined,
+        avatarPath: avatarPath,
+        coverPath: coverPath,
+      },
+    );
   }
 
   activateUser(email: string) {
