@@ -24,6 +24,9 @@ export class AuthService {
     if (user?.password !== password) {
       throw new UnauthorizedException();
     }
+    if (!user.isActivated) {
+      throw new BadRequestException('Verification required');
+    }
     const payload = { sub: user.id, email: user.email };
     return {
       access_token: await this.jwtService.signAsync(payload),
@@ -37,22 +40,33 @@ export class AuthService {
   ) {
     if (await this.userService.findOne(body.email))
       throw new BadRequestException('Email was already used');
-    return this.userService.createUser(body, avatar, cover);
-  }
-
-  sendVerification(email: string) {
-    const payload = { email };
-    const token = this.jwtService.sign(payload, {
+    const user = await this.userService.createUser(body, avatar, cover);
+    const payload = { email: user.email };
+    const token = await this.jwtService.sign(payload, {
       secret: process.env.JWT_VERIFICATION_TOKEN_SECRET,
     });
-
     const message = `Your PTITube sign up verification token is ${token}.`;
 
     return this.mailService.sendMail({
       from: 'nyagami <hoangquan05112002@gmail.com>',
-      to: 'hoangquan05112002@gmail.com',
-      subject: `How to Send Emails with Nodemailer`,
+      to: user.email,
+      subject: 'Sign up verification',
       text: message,
     });
+  }
+
+  async verifySignUp(token: string) {
+    const payload = await this.jwtService.verify(token, {
+      secret: process.env.JWT_VERIFICATION_TOKEN_SECRET,
+    });
+    if (typeof payload === 'object' && 'email' in payload) {
+      await this.userService.activateUser(payload.email);
+      return {
+        success: true,
+        message: 'verification successfully',
+      };
+    } else {
+      throw new BadRequestException('Wrong token');
+    }
   }
 }

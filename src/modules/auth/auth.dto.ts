@@ -29,7 +29,7 @@ export class SignUpDto {
   cover?: Express.Multer.File;
 }
 
-export class SignUpVerificationDto {
+export class SignUpVerifyDto {
   @ApiProperty()
   token: string;
 }

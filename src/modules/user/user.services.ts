@@ -62,4 +62,13 @@ export class UserService {
     await this.profileRepository.insert(profile);
     return profile;
   }
+
+  activateUser(email: string) {
+    return this.userRepository.update(
+      { email },
+      {
+        isActivated: true,
+      },
+    );
+  }
 }

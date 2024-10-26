@@ -11,7 +11,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { SignInDto, SignUpDto } from './auth.dto';
+import { SignInDto, SignUpDto, SignUpVerifyDto } from './auth.dto';
 import { AuthGuard } from './auth.guard';
 import { ApiBearerAuth, ApiConsumes } from '@nestjs/swagger';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
@@ -51,5 +51,10 @@ export class AuthController {
       files.avatar?.[0],
       files.cover?.[0],
     );
+  }
+
+  @Post('verify')
+  verify(@Body() verifyDto: SignUpVerifyDto) {
+    return this.authService.verifySignUp(verifyDto.token);
   }
 }
