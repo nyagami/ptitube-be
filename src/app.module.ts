@@ -19,6 +19,8 @@ import {
 import { AuthModule } from './modules/auth/auth.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthGuard } from './core/guards/auth.guard';
 
 @Module({
   imports: [
@@ -58,6 +60,12 @@ import { ServeStaticModule } from '@nestjs/serve-static';
       serveRoot: '/static',
     }),
     AuthModule,
+  ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
   ],
 })
 export class AppModule {}

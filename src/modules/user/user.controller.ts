@@ -6,14 +6,12 @@ import {
   Patch,
   Request,
   UploadedFiles,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { UserService } from './user.services';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { UpdateProfileDto } from './user.dto';
 import { ApiBearerAuth, ApiConsumes } from '@nestjs/swagger';
-import { AuthGuard } from '../../core/guards/auth.guard';
 
 @Controller('user')
 export class UserController {
@@ -25,7 +23,6 @@ export class UserController {
   }
 
   @ApiBearerAuth()
-  @UseGuards(AuthGuard)
   @ApiConsumes('multipart/form-data')
   @Patch('')
   @UseInterceptors(

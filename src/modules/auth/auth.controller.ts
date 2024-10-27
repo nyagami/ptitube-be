@@ -7,34 +7,27 @@ import {
   Post,
   Request,
   UploadedFiles,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignInDto, SignUpDto, SignUpVerifyDto } from './auth.dto';
-import { AuthGuard } from '../../core/guards/auth.guard';
 import { ApiBearerAuth, ApiConsumes } from '@nestjs/swagger';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { AuthMetadata } from 'src/core/guards/auth.guard';
 
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @HttpCode(HttpStatus.OK)
   @Post('sign-in')
+  @AuthMetadata('Public')
   signIn(@Body() signInDto: SignInDto) {
     return this.authService.signIn(signInDto.email, signInDto.password);
   }
 
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard)
-  @Get('profile')
-  getProfile(@Request() req) {
-    return req.user;
-  }
-
   @ApiConsumes('multipart/form-data')
   @Post('sign-up')
+  @AuthMetadata('Public')
   @UseInterceptors(
     FileFieldsInterceptor([
       { name: 'avatar', maxCount: 1 },
@@ -54,6 +47,7 @@ export class AuthController {
   }
 
   @Post('verify')
+  @AuthMetadata('Public')
   verify(@Body() verifyDto: SignUpVerifyDto) {
     return this.authService.verifySignUp(verifyDto.token);
   }

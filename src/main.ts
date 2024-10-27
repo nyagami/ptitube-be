@@ -11,7 +11,9 @@ async function bootstrap() {
     .setVersion('1.0')
     .addTag('mobile')
     .addBearerAuth()
+    .addSecurityRequirements('bearer')
     .build();
+
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, documentFactory);
 
