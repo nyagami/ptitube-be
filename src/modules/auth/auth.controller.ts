@@ -1,17 +1,13 @@
 import {
   Body,
   Controller,
-  Get,
-  HttpCode,
-  HttpStatus,
   Post,
-  Request,
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignInDto, SignUpDto, SignUpVerifyDto } from './auth.dto';
-import { ApiBearerAuth, ApiConsumes } from '@nestjs/swagger';
+import { ApiConsumes } from '@nestjs/swagger';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { AuthMetadata } from 'src/core/guards/auth.guard';
 

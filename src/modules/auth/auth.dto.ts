@@ -2,14 +2,20 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class SignInDto {
   @ApiProperty({
-    default: 'a@a.com',
+    default: 'hoangquan05112002@gmail.com',
   })
   email: string;
 
   @ApiProperty({
-    default: '123',
+    default: '123123',
   })
   password: string;
+
+  @ApiProperty({
+    default: true,
+    required: false,
+  })
+  rememberSignIn?: boolean;
 }
 
 export class SignUpDto {

@@ -17,9 +17,15 @@ import { ApiBearerAuth, ApiConsumes } from '@nestjs/swagger';
 export class UserController {
   constructor(private userService: UserService) {}
 
-  @Get(':id')
+  @Get('detail/:id')
   get(@Param() params: { id: number }) {
     return this.userService.get(params.id);
+  }
+
+  @Get('me')
+  getMe(@Request() req) {
+    const user = req.user;
+    return this.userService.get(user.id);
   }
 
   @ApiBearerAuth()

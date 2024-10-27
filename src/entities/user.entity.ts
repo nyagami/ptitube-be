@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { ProfileEntity } from './profile.entity';
 import { FollowingEnity } from './following.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class UserEntity {
@@ -17,6 +18,7 @@ export class UserEntity {
   @Column({ unique: true })
   email: string;
 
+  @Exclude()
   @Column()
   password: string;
 
