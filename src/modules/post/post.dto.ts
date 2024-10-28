@@ -18,3 +18,17 @@ export class GetPostListDto {
   @ApiProperty({ default: 0 })
   page: number;
 }
+
+export class UpdatePostDto {
+  @ApiProperty({ default: 1 })
+  postId: number;
+
+  @ApiProperty({ default: 'new title' })
+  title: string;
+
+  @ApiProperty({ default: 'new description' })
+  description: string;
+
+  @ApiProperty({ type: 'file', required: false })
+  thumbnail?: Express.Multer.File;
+}

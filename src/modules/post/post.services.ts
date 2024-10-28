@@ -1,11 +1,12 @@
-import { Injectable } from '@nestjs/common';
-import { UploadPostDto } from './post.dto';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { UpdatePostDto, UploadPostDto } from './post.dto';
 import * as ffmpeg from 'fluent-ffmpeg';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PostEntity, UserEntity, VideoEntity } from 'src/entities';
 import { Repository } from 'typeorm';
 import { PAGE_SIZE } from 'src/core/constants';
 import { PageDto } from 'src/core/dto/page.dto';
+import { resolveFileServePath } from 'src/utils/fileUtils';
 
 @Injectable()
 export class PostService {
@@ -54,14 +55,12 @@ export class PostService {
     userId: number,
   ) {
     const user = await this.userRepositoy.findOneBy({ id: userId });
-    const thumbnailPath =
-      thumbnail.destination.slice(1) + '/' + thumbnail.filename;
     const videoMetadata = await this.getVideoMetadata(video.path);
 
     const post = await this.postRepository.create({
       title: uploadPostDto.title,
       description: uploadPostDto.description,
-      thumbnailPath: thumbnailPath,
+      thumbnailPath: resolveFileServePath(thumbnail),
       duration: videoMetadata.format.duration,
       likes: [],
       createdBy: user,
@@ -69,7 +68,7 @@ export class PostService {
 
     const insertedPost = await this.postRepository.save(post);
     const originalVideo = await this.videoRepository.create({
-      path: video.destination.slice(1) + '/' + video.filename,
+      path: resolveFileServePath(video),
       post: insertedPost,
       mimeType: video.mimetype,
       filename: video.filename,
@@ -85,7 +84,7 @@ export class PostService {
     const [posts, totalItems] = await this.postRepository.findAndCount({
       take: PAGE_SIZE,
       skip: page * PAGE_SIZE,
-      relations: { videos: true },
+      relations: { videos: true, createdBy: { profile: true } },
     });
     const response: PageDto<PostEntity> = {
       meta: {
@@ -96,5 +95,28 @@ export class PostService {
       data: posts,
     };
     return response;
+  }
+
+  async updatePost(
+    userId: number,
+    updatePostDto: UpdatePostDto,
+    thumbnail?: Express.Multer.File,
+  ) {
+    const post = await this.postRepository.findOne({
+      where: { id: updatePostDto.postId },
+      relations: { createdBy: true },
+    });
+    if (!post) throw new BadRequestException('Post does not exist');
+    if (post.createdBy.id !== userId)
+      throw new BadRequestException('You can not update this post');
+
+    return this.postRepository.update(
+      { id: post.id },
+      {
+        thumbnailPath: thumbnail ? resolveFileServePath(thumbnail) : undefined,
+        title: updatePostDto.title,
+        description: updatePostDto.description,
+      },
+    );
   }
 }

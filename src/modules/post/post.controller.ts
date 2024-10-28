@@ -3,13 +3,14 @@ import {
   Controller,
   Get,
   Param,
+  Patch,
   Post,
   Query,
   Request,
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
-import { GetPostListDto, UploadPostDto } from './post.dto';
+import { GetPostListDto, UpdatePostDto, UploadPostDto } from './post.dto';
 import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { postStorageOptions } from 'src/core/file/file.storage.options';
@@ -49,5 +50,27 @@ export class PostController {
   @Get('list')
   getPostList(@Query() getPostListDto: GetPostListDto) {
     return this.postService.getPostList(Number(getPostListDto.page));
+  }
+
+  @ApiConsumes('multipart/form-data')
+  @Patch()
+  @UseInterceptors(
+    FileFieldsInterceptor(
+      [{ name: 'thumbnail', maxCount: 1 }],
+      postStorageOptions,
+    ),
+  )
+  updatePost(
+    @Body() updatePostDto: UpdatePostDto,
+    @UploadedFiles()
+    files: { thumbnail?: Express.Multer.File[] },
+    @Request() req,
+  ) {
+    const userId = req.user.id;
+    return this.postService.updatePost(
+      userId,
+      updatePostDto,
+      files.thumbnail?.[0],
+    );
   }
 }
