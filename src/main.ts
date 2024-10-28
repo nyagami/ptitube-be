@@ -14,7 +14,6 @@ async function bootstrap() {
     .setTitle('PTITube')
     .setDescription('The PTITube API description')
     .setVersion('1.0')
-    .addTag('mobile')
     .addBearerAuth()
     .addSecurityRequirements('bearer')
     .build();

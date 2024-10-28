@@ -7,10 +7,11 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignInDto, SignUpDto, SignUpVerifyDto } from './auth.dto';
-import { ApiConsumes } from '@nestjs/swagger';
+import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { AuthMetadata } from 'src/core/guards/auth.guard';
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
@@ -33,7 +34,7 @@ export class AuthController {
   signUp(
     @Body() signUpDto: SignUpDto,
     @UploadedFiles()
-    files: { avatar?: Express.Multer.File; cover?: Express.Multer.File },
+    files: { avatar?: Express.Multer.File[]; cover?: Express.Multer.File[] },
   ) {
     return this.authService.signUp(
       signUpDto,

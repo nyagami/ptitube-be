@@ -8,11 +8,12 @@ import {
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
-import { UserService } from './user.services';
+import { UserService } from './user.service';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { UpdateProfileDto } from './user.dto';
-import { ApiBearerAuth, ApiConsumes } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiConsumes, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('User')
 @Controller('user')
 export class UserController {
   constructor(private userService: UserService) {}
@@ -40,15 +41,15 @@ export class UserController {
   updateProfile(
     @Body() updateProfileDto: UpdateProfileDto,
     @UploadedFiles()
-    files: { avatar?: Express.Multer.File; cover?: Express.Multer.File },
+    files: { avatar?: Express.Multer.File[]; cover?: Express.Multer.File[] },
     @Request() req,
   ) {
     const user = req.user;
     return this.userService.updateProfile(
       user.id,
       updateProfileDto.displayName,
-      files.avatar,
-      files.cover,
+      files.avatar?.[0],
+      files.cover?.[0],
     );
   }
 }
