@@ -10,6 +10,8 @@ import { SignInDto, SignUpDto, SignUpVerifyDto } from './auth.dto';
 import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { AuthMetadata } from 'src/core/guards/auth.guard';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -26,10 +28,20 @@ export class AuthController {
   @Post('sign-up')
   @AuthMetadata('Public')
   @UseInterceptors(
-    FileFieldsInterceptor([
-      { name: 'avatar', maxCount: 1 },
-      { name: 'cover', maxCount: 1 },
-    ]),
+    FileFieldsInterceptor(
+      [
+        { name: 'avatar', maxCount: 1 },
+        { name: 'cover', maxCount: 1 },
+      ],
+      {
+        storage: diskStorage({
+          destination: './static/user',
+          filename: (_, file, cb) => {
+            cb(null, `${uuid()}${extname(file.originalname)}`);
+          },
+        }),
+      },
+    ),
   )
   signUp(
     @Body() signUpDto: SignUpDto,
@@ -48,4 +60,7 @@ export class AuthController {
   verify(@Body() verifyDto: SignUpVerifyDto) {
     return this.authService.verifySignUp(verifyDto.token);
   }
+}
+function uuid() {
+  throw new Error('Function not implemented.');
 }

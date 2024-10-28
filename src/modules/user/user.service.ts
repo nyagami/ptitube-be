@@ -1,9 +1,10 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProfileEntity, UserEntity } from 'src/entities';
-import { saveFile } from 'src/utils/fileUtils';
 import { Repository } from 'typeorm';
 import { SignUpDto } from '../auth/auth.dto';
+import { join } from 'path';
+import { mkdirSync, writeFileSync } from 'fs';
 
 @Injectable()
 export class UserService {
@@ -48,11 +49,11 @@ export class UserService {
   ) {
     let avatarPath = undefined;
     if (avatar) {
-      avatarPath = await saveFile(`avatar-${displayName}`, avatar);
+      avatarPath = avatar.destination.slice(1) + '/' + avatar.filename;
     }
     let coverPath = undefined;
     if (cover) {
-      coverPath = await saveFile(`cover-${displayName}`, cover);
+      coverPath = cover.destination.slice(1) + '/' + cover.fieldname;
     }
     const profile = await this.profileRepository.create({
       displayName,
@@ -71,11 +72,11 @@ export class UserService {
   ) {
     let avatarPath = undefined;
     if (avatar) {
-      avatarPath = await saveFile(`avatar-${displayName}`, avatar);
+      avatarPath = avatar.destination.slice(1) + '/' + avatar.filename;
     }
     let coverPath = undefined;
     if (cover) {
-      coverPath = await saveFile(`cover-${displayName}`, cover);
+      coverPath = cover.destination.slice(1) + '/' + cover.fieldname;
     }
     return this.profileRepository.update(
       { id: userId },
