@@ -23,7 +23,7 @@ export class PostEntity {
   description: string;
 
   @Column()
-  thumbnailUrl: string;
+  thumbnailPath: string;
 
   @OneToMany(() => VideoEntity, (video) => video.post)
   videos: VideoEntity[];
@@ -37,8 +37,8 @@ export class PostEntity {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @Column()
-  length: number;
+  @Column({ nullable: true })
+  duration: number;
 
   @Column({ nullable: true })
   lastPostion: number | null;

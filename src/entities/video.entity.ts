@@ -10,14 +10,14 @@ export class VideoEntity {
   post: PostEntity;
 
   @Column()
-  url: string;
+  path: string;
 
   @Column()
-  resolution: string;
+  resolution?: string;
 
   @Column()
-  name: string;
+  filename: string;
 
   @Column()
-  type: string;
+  mimeType: string;
 }

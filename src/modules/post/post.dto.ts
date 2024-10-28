@@ -10,6 +10,6 @@ export class UploadPostDto {
   @ApiProperty({ type: 'file' })
   thumbnail?: Express.Multer.File;
 
-  @ApiProperty({ type: 'video' })
+  @ApiProperty({ type: 'file' })
   video?: Express.Multer.File;
 }

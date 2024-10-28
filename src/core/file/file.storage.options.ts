@@ -67,6 +67,6 @@ export const postStorageOptions: MulterOptions = {
     if (isImage(file.originalname, file.mimetype)) {
       return cb(null, true);
     }
-    return cb(new BadRequestException('Error: thumbnail must be video'), false);
+    return cb(new BadRequestException('Error: thumbnail must be image'), false);
   },
 };
