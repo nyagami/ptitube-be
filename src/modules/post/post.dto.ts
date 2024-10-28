@@ -32,3 +32,11 @@ export class UpdatePostDto {
   @ApiProperty({ type: 'file', required: false })
   thumbnail?: Express.Multer.File;
 }
+
+export class SearchPostDto {
+  @ApiProperty({ default: 0 })
+  page: number;
+
+  @ApiProperty({ default: '' })
+  keyword: string;
+}

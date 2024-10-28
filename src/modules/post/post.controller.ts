@@ -10,7 +10,12 @@ import {
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
-import { GetPostListDto, UpdatePostDto, UploadPostDto } from './post.dto';
+import {
+  GetPostListDto,
+  SearchPostDto,
+  UpdatePostDto,
+  UploadPostDto,
+} from './post.dto';
 import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { postStorageOptions } from 'src/core/file/file.storage.options';
@@ -71,6 +76,14 @@ export class PostController {
       userId,
       updatePostDto,
       files.thumbnail?.[0],
+    );
+  }
+
+  @Get('search')
+  searchPost(@Query() searchPostDto: SearchPostDto) {
+    return this.postService.searchPost(
+      Number(searchPostDto.page),
+      searchPostDto.keyword,
     );
   }
 }
