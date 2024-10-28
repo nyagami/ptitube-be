@@ -41,7 +41,7 @@ export class PostEntity {
   duration: number;
 
   @Column({ nullable: true })
-  lastPostion: number | null;
+  lastPosition: number | null;
 
   @ManyToOne(() => UserEntity)
   createdBy: UserEntity;
