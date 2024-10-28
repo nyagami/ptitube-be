@@ -1,12 +1,15 @@
 import {
   Body,
   Controller,
+  Get,
+  Param,
   Post,
+  Query,
   Request,
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
-import { UploadPostDto } from './post.dto';
+import { GetPostListDto, UploadPostDto } from './post.dto';
 import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { postStorageOptions } from 'src/core/file/file.storage.options';
@@ -41,5 +44,10 @@ export class PostController {
       files.video[0],
       userId,
     );
+  }
+
+  @Get('list')
+  getPostList(@Query() getPostListDto: GetPostListDto) {
+    return this.postService.getPostList(Number(getPostListDto.page));
   }
 }

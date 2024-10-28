@@ -4,6 +4,8 @@ import * as ffmpeg from 'fluent-ffmpeg';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PostEntity, UserEntity, VideoEntity } from 'src/entities';
 import { Repository } from 'typeorm';
+import { PAGE_SIZE } from 'src/core/constants';
+import { PageDto } from 'src/core/dto/page.dto';
 
 @Injectable()
 export class PostService {
@@ -74,5 +76,25 @@ export class PostService {
       resolution: `${videoMetadata.streams?.[0]?.width}x${videoMetadata.streams?.[0]?.height}`,
     });
     await this.videoRepository.insert(originalVideo);
+  }
+
+  async getPostList(page: number) {
+    const queryBuilder = this.postRepository.createQueryBuilder('post');
+    queryBuilder.skip(page * PAGE_SIZE).take(PAGE_SIZE);
+
+    const [posts, totalItems] = await this.postRepository.findAndCount({
+      take: PAGE_SIZE,
+      skip: page * PAGE_SIZE,
+      relations: { videos: true },
+    });
+    const response: PageDto<PostEntity> = {
+      meta: {
+        totalItems,
+        totalPages: Math.ceil(totalItems / PAGE_SIZE),
+        page: page,
+      },
+      data: posts,
+    };
+    return response;
   }
 }

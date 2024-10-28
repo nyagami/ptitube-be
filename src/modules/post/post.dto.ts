@@ -13,3 +13,8 @@ export class UploadPostDto {
   @ApiProperty({ type: 'file' })
   video?: Express.Multer.File;
 }
+
+export class GetPostListDto {
+  @ApiProperty({ default: 0 })
+  page: number;
+}
