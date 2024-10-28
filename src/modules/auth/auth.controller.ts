@@ -10,8 +10,7 @@ import { SignInDto, SignUpDto, SignUpVerifyDto } from './auth.dto';
 import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { AuthMetadata } from 'src/core/guards/auth.guard';
-import { diskStorage } from 'multer';
-import { extname } from 'path';
+import { profileStorageOptions } from 'src/core/file/file.storage.options';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -33,14 +32,7 @@ export class AuthController {
         { name: 'avatar', maxCount: 1 },
         { name: 'cover', maxCount: 1 },
       ],
-      {
-        storage: diskStorage({
-          destination: './static/user',
-          filename: (_, file, cb) => {
-            cb(null, `${uuid()}${extname(file.originalname)}`);
-          },
-        }),
-      },
+      profileStorageOptions,
     ),
   )
   signUp(
@@ -60,7 +52,4 @@ export class AuthController {
   verify(@Body() verifyDto: SignUpVerifyDto) {
     return this.authService.verifySignUp(verifyDto.token);
   }
-}
-function uuid() {
-  throw new Error('Function not implemented.');
 }

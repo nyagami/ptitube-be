@@ -53,7 +53,7 @@ export class UserService {
     }
     let coverPath = undefined;
     if (cover) {
-      coverPath = cover.destination.slice(1) + '/' + cover.fieldname;
+      coverPath = cover.destination.slice(1) + '/' + cover.filename;
     }
     const profile = await this.profileRepository.create({
       displayName,
@@ -76,7 +76,7 @@ export class UserService {
     }
     let coverPath = undefined;
     if (cover) {
-      coverPath = cover.destination.slice(1) + '/' + cover.fieldname;
+      coverPath = cover.destination.slice(1) + '/' + cover.filename;
     }
     return this.profileRepository.update(
       { id: userId },

@@ -12,9 +12,7 @@ import { UserService } from './user.service';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { UpdateProfileDto } from './user.dto';
 import { ApiBearerAuth, ApiConsumes, ApiTags } from '@nestjs/swagger';
-import { diskStorage } from 'multer';
-import { v4 as uuid } from 'uuid';
-import { extname } from 'path';
+import { profileStorageOptions } from 'src/core/file/file.storage.options';
 
 @ApiTags('User')
 @Controller('user')
@@ -41,14 +39,7 @@ export class UserController {
         { name: 'avatar', maxCount: 1 },
         { name: 'cover', maxCount: 1 },
       ],
-      {
-        storage: diskStorage({
-          destination: './static/user',
-          filename: (_, file, cb) => {
-            cb(null, `${uuid()}${extname(file.originalname)}`);
-          },
-        }),
-      },
+      profileStorageOptions,
     ),
   )
   updateProfile(
