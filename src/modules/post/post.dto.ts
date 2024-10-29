@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsNotEmptyObject } from 'class-validator';
+import { PostEntity } from 'src/entities';
 
 export class UploadPostDto {
   @IsNotEmpty()

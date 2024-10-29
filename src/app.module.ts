@@ -22,6 +22,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { AuthGuard } from './core/guards/auth.guard';
 import { PostModule } from './modules/post/post.module';
+import { PostLikeEntity } from './entities/post.entity';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { PostModule } from './modules/post/post.module';
         ProfileEntity,
         FollowingEnity,
         PostEntity,
+        PostLikeEntity,
         VideoEntity,
         CommentEntity,
         ReplyEntity,

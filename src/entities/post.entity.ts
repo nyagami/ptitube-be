@@ -2,10 +2,13 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  JoinTable,
   ManyToMany,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
+  Unique,
   UpdateDateColumn,
 } from 'typeorm';
 import { UserEntity } from './user.entity';
@@ -28,8 +31,8 @@ export class PostEntity {
   @OneToMany(() => VideoEntity, (video) => video.post)
   videos: VideoEntity[];
 
-  @ManyToMany(() => UserEntity)
-  likes: UserEntity[];
+  @OneToMany(() => PostLikeEntity, (like) => like.post)
+  likes: PostLikeEntity[];
 
   @CreateDateColumn()
   createdAt: Date;
@@ -45,4 +48,17 @@ export class PostEntity {
 
   @ManyToOne(() => UserEntity)
   createdBy: UserEntity;
+}
+
+@Entity()
+@Unique(['post', 'user'])
+export class PostLikeEntity {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @ManyToOne(() => PostEntity, (post) => post.likes)
+  post: PostEntity;
+
+  @ManyToOne(() => UserEntity, (user) => user.likes)
+  user: UserEntity;
 }

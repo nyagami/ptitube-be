@@ -2,6 +2,7 @@ import {
   Column,
   Entity,
   JoinColumn,
+  ManyToOne,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -9,6 +10,7 @@ import {
 import { ProfileEntity } from './profile.entity';
 import { FollowingEnity } from './following.entity';
 import { Exclude } from 'class-transformer';
+import { PostLikeEntity } from './post.entity';
 
 @Entity()
 export class UserEntity {
@@ -28,6 +30,9 @@ export class UserEntity {
   @OneToOne(() => ProfileEntity, (profile) => profile.user)
   @JoinColumn()
   profile: ProfileEntity;
+
+  @OneToMany(() => PostLikeEntity, (like) => like.user)
+  likes: PostLikeEntity[];
 
   @OneToMany(() => FollowingEnity, (following) => following.follower)
   followers: FollowingEnity[];

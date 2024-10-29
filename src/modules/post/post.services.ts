@@ -7,6 +7,7 @@ import { ILike, Repository } from 'typeorm';
 import { PAGE_SIZE } from 'src/core/constants';
 import { PageDto } from 'src/core/dto/page.dto';
 import { resolveFileServePath } from 'src/utils/fileUtils';
+import { PostLikeEntity } from 'src/entities/post.entity';
 
 @Injectable()
 export class PostService {
@@ -19,6 +20,9 @@ export class PostService {
 
     @InjectRepository(VideoEntity)
     private videoRepository: Repository<VideoEntity>,
+
+    @InjectRepository(PostLikeEntity)
+    private postLikeRepository: Repository<PostLikeEntity>,
   ) {}
 
   private transcodeVideo(inputPath, outputPath, resolution) {
@@ -144,5 +148,37 @@ export class PostService {
       data: posts,
     };
     return response;
+  }
+
+  async getDetail(id: number, userId: number) {
+    const queryBuilder = this.postRepository.createQueryBuilder('post');
+    const post = await queryBuilder
+      .where('post.id = :id', { id })
+      .leftJoinAndSelect('post.videos', 'videos')
+      .leftJoinAndSelect('post.createdBy', 'createdBy')
+      .loadRelationCountAndMap('post.likes', 'post.likes')
+      .getOne();
+    const like = await this.postLikeRepository.findOneBy({
+      post: { id: post.id },
+      user: { id: userId },
+    });
+    return {
+      post: post,
+      isLiked: like != null,
+    };
+  }
+
+  async likePost(userId: number, postId: number) {
+    const post = await this.postRepository.findOneBy({ id: postId });
+    if (!post) throw new BadRequestException('Post does not exist');
+    const user = await this.userRepositoy.findOneBy({ id: userId });
+    const like = this.postLikeRepository.create({ post, user });
+    return this.postLikeRepository.insert(like);
+  }
+  async dislikePost(userId: number, postId: number) {
+    return this.postLikeRepository.delete({
+      post: { id: postId },
+      user: { id: userId },
+    });
   }
 }

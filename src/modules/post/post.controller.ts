@@ -17,7 +17,7 @@ import {
   UpdatePostDto,
   UploadPostDto,
 } from './post.dto';
-import { ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { ApiConsumes, ApiParam, ApiTags } from '@nestjs/swagger';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { postStorageOptions } from 'src/core/file/file.storage.options';
 import { PostService } from './post.services';
@@ -86,5 +86,23 @@ export class PostController {
       Number(searchPostDto.page),
       searchPostDto.keyword,
     );
+  }
+
+  @Get('detai/:id')
+  @ApiParam({ name: 'id' })
+  getDetail(@Param('id') id: number, @Request() req) {
+    return this.postService.getDetail(Number(id), req.user.id);
+  }
+
+  @Post('detail/:id/like')
+  @ApiParam({ name: 'id' })
+  likePost(@Param('id') id: number, @Request() req) {
+    return this.postService.likePost(req.user.id, id);
+  }
+
+  @Post('detail/:id/dislike')
+  @ApiParam({ name: 'id' })
+  dislikePost(@Param('id') id: number, @Request() req) {
+    return this.postService.dislikePost(req.user.id, id);
   }
 }
