@@ -19,7 +19,7 @@ export class PostEntity {
   @Column()
   title: string;
 
-  @Column()
+  @Column({ length: 500 })
   description: string;
 
   @Column()

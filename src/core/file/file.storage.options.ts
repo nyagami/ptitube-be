@@ -5,7 +5,8 @@ import { diskStorage } from 'multer';
 import { extname as ext } from 'path';
 import { v4 as uuid } from 'uuid';
 
-const isImage = (filename: string, mimetype: string) => {
+const isImage = (filename?: string, mimetype?: string) => {
+  if (!filename || !mimetype) return false;
   const filetypes = /jpg|jpeg|png|webp/;
   return (
     filetypes.test(ext(filename).toLowerCase()) && filetypes.test(mimetype)

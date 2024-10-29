@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -40,9 +41,13 @@ export class PostController {
   uploadPost(
     @Body() uploadPostDto: UploadPostDto,
     @UploadedFiles()
-    files: { thumbnail: Express.Multer.File[]; video: Express.Multer.File[] },
+    files: { thumbnail?: Express.Multer.File[]; video?: Express.Multer.File[] },
     @Request() req,
   ) {
+    console.log(files.thumbnail, files.video);
+    if (!files.thumbnail?.[0] && files.video?.[0]) {
+      throw new BadRequestException('missing files');
+    }
     const userId = req.user.id;
     return this.postService.uploadPost(
       uploadPostDto,
