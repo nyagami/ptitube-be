@@ -165,6 +165,7 @@ export class PostService {
     return {
       post: post,
       isLiked: like != null,
+      likes: post.likes,
     };
   }
 

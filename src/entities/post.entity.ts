@@ -13,6 +13,7 @@ import {
 } from 'typeorm';
 import { UserEntity } from './user.entity';
 import { VideoEntity } from './video.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class PostEntity {
@@ -31,6 +32,7 @@ export class PostEntity {
   @OneToMany(() => VideoEntity, (video) => video.post)
   videos: VideoEntity[];
 
+  @Exclude()
   @OneToMany(() => PostLikeEntity, (like) => like.post)
   likes: PostLikeEntity[];
 
