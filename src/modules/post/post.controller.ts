@@ -88,7 +88,7 @@ export class PostController {
     );
   }
 
-  @Get('detai/:id')
+  @Get('detail/:id')
   @ApiParam({ name: 'id' })
   getDetail(@Param('id') id: number, @Request() req) {
     return this.postService.getDetail(Number(id), req.user.id);
