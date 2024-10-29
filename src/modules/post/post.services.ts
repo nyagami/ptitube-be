@@ -82,6 +82,7 @@ export class PostService {
       take: PAGE_SIZE,
       skip: page * PAGE_SIZE,
       relations: { videos: true, createdBy: { profile: true } },
+      order: { updatedAt: 'desc' },
     });
     const response: PageDto<PostEntity> = {
       meta: {
@@ -131,6 +132,7 @@ export class PostService {
         },
       ],
       relations: { videos: true, createdBy: { profile: true } },
+      order: { updatedAt: 'desc' },
     });
 
     const response: PageDto<PostEntity> = {

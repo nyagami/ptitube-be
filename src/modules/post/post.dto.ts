@@ -1,9 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsNotEmptyObject } from 'class-validator';
 
 export class UploadPostDto {
+  @IsNotEmpty()
   @ApiProperty({ default: 'title' })
   title?: string;
 
+  @IsNotEmpty()
   @ApiProperty({ default: 'description' })
   description?: string;
 

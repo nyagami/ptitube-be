@@ -44,10 +44,6 @@ export class PostController {
     files: { thumbnail?: Express.Multer.File[]; video?: Express.Multer.File[] },
     @Request() req,
   ) {
-    console.log(files.thumbnail, files.video);
-    if (!files.thumbnail?.[0] && files.video?.[0]) {
-      throw new BadRequestException('missing files');
-    }
     const userId = req.user.id;
     return this.postService.uploadPost(
       uploadPostDto,
