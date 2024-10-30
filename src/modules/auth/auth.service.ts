@@ -40,19 +40,19 @@ export class AuthService {
   ) {
     if (await this.userService.findOne(body.email))
       throw new BadRequestException('Email was already used');
-    const user = await this.userService.createUser(body, avatar, cover);
-    const payload = { email: user.email };
-    const token = await this.jwtService.sign(payload, {
-      secret: process.env.JWT_VERIFICATION_TOKEN_SECRET,
-    });
-    const message = `Your PTITube sign up verification token is ${token}.`;
+    return this.userService.createUser(body, avatar, cover);
+    // const payload = { email: user.email };
+    // const token = await this.jwtService.sign(payload, {
+    //   secret: process.env.JWT_VERIFICATION_TOKEN_SECRET,
+    // });
+    // const message = `Your PTITube sign up verification token is ${token}.`;
 
-    return this.mailService.sendMail({
-      from: 'nyagami <hoangquan05112002@gmail.com>',
-      to: user.email,
-      subject: 'Sign up verification',
-      text: message,
-    });
+    // return this.mailService.sendMail({
+    //   from: 'nyagami <hoangquan05112002@gmail.com>',
+    //   to: user.email,
+    //   subject: 'Sign up verification',
+    //   text: message,
+    // });
   }
 
   async verifySignUp(token: string) {

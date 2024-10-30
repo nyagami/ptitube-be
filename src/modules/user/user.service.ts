@@ -36,7 +36,7 @@ export class UserService {
       email: body.email,
       password: body.password,
       profile,
-      isActivated: false,
+      isActivated: true,
     });
     await this.userRepository.insert(user);
     return user;
