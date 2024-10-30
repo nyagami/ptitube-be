@@ -2,7 +2,13 @@ import { Module } from '@nestjs/common';
 import { PostService } from './post.services';
 import { PostController } from './post.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { PostEntity, UserEntity, VideoEntity } from 'src/entities';
+import {
+  CommentEntity,
+  PostEntity,
+  ReplyEntity,
+  UserEntity,
+  VideoEntity,
+} from 'src/entities';
 import { PostLikeEntity } from 'src/entities/post.entity';
 
 @Module({
@@ -12,6 +18,8 @@ import { PostLikeEntity } from 'src/entities/post.entity';
       UserEntity,
       VideoEntity,
       PostLikeEntity,
+      CommentEntity,
+      ReplyEntity,
     ]),
   ],
   providers: [PostService],

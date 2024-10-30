@@ -12,6 +12,8 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import {
+  CreateCommentDto,
+  CreateReplyDto,
   GetPostListDto,
   SearchPostDto,
   UpdatePostDto,
@@ -104,5 +106,32 @@ export class PostController {
   @ApiParam({ name: 'id' })
   dislikePost(@Param('id') id: number, @Request() req) {
     return this.postService.dislikePost(req.user.id, id);
+  }
+
+  @Post('detail/:id/comment')
+  @ApiParam({ name: 'id' })
+  comment(
+    @Param('id') id: number,
+    @Body() createCommentDto: CreateCommentDto,
+    @Request() req,
+  ) {
+    return this.postService.createComment(
+      Number(id),
+      req.user.id,
+      createCommentDto.content,
+    );
+  }
+
+  @Post('detail/:id/reply')
+  reply(
+    @Param('id') id: number,
+    @Body() createReplyDto: CreateReplyDto,
+    @Request() req,
+  ) {
+    return this.postService.createReply(
+      createReplyDto.commentId,
+      req.user.id,
+      createReplyDto.content,
+    );
   }
 }

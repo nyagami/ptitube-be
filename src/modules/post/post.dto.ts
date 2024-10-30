@@ -44,3 +44,16 @@ export class SearchPostDto {
   @ApiProperty({ default: '' })
   keyword: string;
 }
+
+export class CreateCommentDto {
+  @ApiProperty({ default: 'comment' })
+  content: string;
+}
+
+export class CreateReplyDto {
+  @ApiProperty({ default: 1 })
+  commentId: number;
+
+  @ApiProperty({ default: 'reply' })
+  content: string;
+}

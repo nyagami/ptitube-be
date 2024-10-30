@@ -2,7 +2,13 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { UpdatePostDto, UploadPostDto } from './post.dto';
 import * as ffmpeg from 'fluent-ffmpeg';
 import { InjectRepository } from '@nestjs/typeorm';
-import { PostEntity, UserEntity, VideoEntity } from 'src/entities';
+import {
+  CommentEntity,
+  PostEntity,
+  ReplyEntity,
+  UserEntity,
+  VideoEntity,
+} from 'src/entities';
 import { ILike, Repository } from 'typeorm';
 import { PAGE_SIZE } from 'src/core/constants';
 import { PageDto } from 'src/core/dto/page.dto';
@@ -23,6 +29,12 @@ export class PostService {
 
     @InjectRepository(PostLikeEntity)
     private postLikeRepository: Repository<PostLikeEntity>,
+
+    @InjectRepository(CommentEntity)
+    private commentRepository: Repository<CommentEntity>,
+
+    @InjectRepository(ReplyEntity)
+    private replyRepository: Repository<ReplyEntity>,
   ) {}
 
   private transcodeVideo(inputPath, outputPath, resolution) {
@@ -156,6 +168,7 @@ export class PostService {
       .where('post.id = :id', { id })
       .leftJoinAndSelect('post.videos', 'videos')
       .leftJoinAndSelect('post.createdBy', 'createdBy')
+      .leftJoinAndSelect('createdBy.profile', 'profile')
       .loadRelationCountAndMap('post.likes', 'post.likes')
       .getOne();
     const like = await this.postLikeRepository.findOneBy({
@@ -181,5 +194,30 @@ export class PostService {
       post: { id: postId },
       user: { id: userId },
     });
+  }
+
+  async createComment(postId: number, userId: number, content: string) {
+    const post = await this.postRepository.findOneBy({ id: postId });
+    if (!post) throw new BadRequestException('Post does not exist');
+    const user = await this.userRepositoy.findOneBy({ id: userId });
+    const comment = await this.commentRepository.create({
+      post,
+      createdBy: user,
+      content,
+    });
+
+    return this.commentRepository.insert(comment);
+  }
+
+  async createReply(commentId: number, userId: number, content: string) {
+    const comment = await this.commentRepository.findOneBy({ id: commentId });
+    if (!comment) throw new BadRequestException('Comment does not exist');
+    const user = await this.userRepositoy.findOneBy({ id: userId });
+    const reply = await this.replyRepository.create({
+      comment,
+      createdBy: user,
+      content,
+    });
+    return this.replyRepository.insert(reply);
   }
 }
