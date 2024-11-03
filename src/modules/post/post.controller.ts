@@ -15,6 +15,7 @@ import {
   CreateCommentDto,
   CreateReplyDto,
   GetPostListDto,
+  GetUserPostListDto,
   SearchPostDto,
   UpdatePostDto,
   UploadPostDto,
@@ -58,6 +59,11 @@ export class PostController {
   @Get('list')
   getPostList(@Query() getPostListDto: GetPostListDto) {
     return this.postService.getPostList(Number(getPostListDto.page));
+  }
+
+  @Get('user-post-list')
+  getUserPostList(@Query() getUserPostListDto: GetUserPostListDto) {
+    return this.postService.getUserPostList(getUserPostListDto);
   }
 
   @ApiConsumes('multipart/form-data')

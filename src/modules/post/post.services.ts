@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { UpdatePostDto, UploadPostDto } from './post.dto';
+import { GetUserPostListDto, UpdatePostDto, UploadPostDto } from './post.dto';
 import * as ffmpeg from 'fluent-ffmpeg';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
@@ -105,6 +105,28 @@ export class PostService {
         totalItems,
         totalPages: Math.ceil(totalItems / PAGE_SIZE),
         page: page,
+      },
+      data: posts,
+    };
+    return response;
+  }
+
+  async getUserPostList(getUserPostListDto: GetUserPostListDto) {
+    const [posts, totalItems] = await this.postRepository.findAndCount({
+      take: PAGE_SIZE,
+      skip: getUserPostListDto.page * PAGE_SIZE,
+      relations: { videos: true, createdBy: { profile: true } },
+      order: { updatedAt: 'desc' },
+      where: {
+        createdBy: { id: getUserPostListDto.userId },
+      },
+    });
+
+    const response: PageDto<PostEntity> = {
+      meta: {
+        totalItems,
+        totalPages: Math.ceil(totalItems / PAGE_SIZE),
+        page: getUserPostListDto.page,
       },
       data: posts,
     };

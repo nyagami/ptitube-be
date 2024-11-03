@@ -57,3 +57,11 @@ export class CreateReplyDto {
   @ApiProperty({ default: 'reply' })
   content: string;
 }
+
+export class GetUserPostListDto {
+  @ApiProperty({ default: 0 })
+  page: number;
+
+  @ApiProperty({ default: 1 })
+  userId: number;
+}
