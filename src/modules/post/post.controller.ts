@@ -14,6 +14,8 @@ import {
 import {
   CreateCommentDto,
   CreateReplyDto,
+  GetCommentListDto,
+  GetCommentReplyListDto,
   GetPostListDto,
   GetUserPostListDto,
   SearchPostDto,
@@ -139,5 +141,21 @@ export class PostController {
       req.user.id,
       createReplyDto.content,
     );
+  }
+
+  @Get('detail/:id/comment-list')
+  listComment(
+    @Param('id') id: number,
+    @Query() getCommentListDto: GetCommentListDto,
+  ) {
+    return this.postService.getCommentList(Number(id), getCommentListDto);
+  }
+
+  @Get('detail/:id/comment-reply-list')
+  commentDetail(
+    @Param('id') id: number,
+    @Query() getCommentReplyListDto: GetCommentReplyListDto,
+  ) {
+    return this.postService.getReplyList(getCommentReplyListDto);
   }
 }

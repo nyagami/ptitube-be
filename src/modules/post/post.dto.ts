@@ -65,3 +65,16 @@ export class GetUserPostListDto {
   @ApiProperty({ default: 1 })
   userId: number;
 }
+
+export class GetCommentListDto {
+  @ApiProperty({ default: 0 })
+  page: number;
+}
+
+export class GetCommentReplyListDto {
+  @ApiProperty({ default: 0 })
+  page: number;
+
+  @ApiProperty({ default: 1 })
+  commentId: number;
+}

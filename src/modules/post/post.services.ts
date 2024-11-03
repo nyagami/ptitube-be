@@ -1,5 +1,11 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { GetUserPostListDto, UpdatePostDto, UploadPostDto } from './post.dto';
+import {
+  GetCommentListDto,
+  GetCommentReplyListDto,
+  GetUserPostListDto,
+  UpdatePostDto,
+  UploadPostDto,
+} from './post.dto';
 import * as ffmpeg from 'fluent-ffmpeg';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
@@ -241,5 +247,51 @@ export class PostService {
       content,
     });
     return this.replyRepository.insert(reply);
+  }
+
+  async getCommentList(postId: number, getCommentListDto: GetCommentListDto) {
+    const post = this.postRepository.findOneBy({ id: postId });
+    if (!post) throw new BadRequestException('Post does not exist');
+
+    const queryBuilder = this.commentRepository.createQueryBuilder('comment');
+    const [comments, totalItems] = await queryBuilder
+      .where('comment.postId = :postId', { postId })
+      .loadRelationCountAndMap('comment.replies', 'comment.replies')
+      .skip(PAGE_SIZE * getCommentListDto.page)
+      .take(PAGE_SIZE)
+      .getManyAndCount();
+
+    const response: PageDto<CommentEntity> = {
+      meta: {
+        totalItems,
+        totalPages: Math.ceil(totalItems / PAGE_SIZE),
+        page: getCommentListDto.page,
+      },
+      data: comments,
+    };
+    return response;
+  }
+
+  async getReplyList(getCommentReplyListDto: GetCommentReplyListDto) {
+    const comment = this.commentRepository.findOneBy({
+      id: getCommentReplyListDto.commentId,
+    });
+    if (!comment) throw new BadRequestException('Post does not exist');
+    const [replies, totalItems] = await this.replyRepository.findAndCount({
+      where: {
+        comment: { id: getCommentReplyListDto.commentId },
+      },
+      skip: PAGE_SIZE * getCommentReplyListDto.page,
+      take: PAGE_SIZE,
+    });
+    const response: PageDto<ReplyEntity> = {
+      meta: {
+        totalItems,
+        totalPages: Math.ceil(totalItems / PAGE_SIZE),
+        page: getCommentReplyListDto.page,
+      },
+      data: replies,
+    };
+    return response;
   }
 }

@@ -3,11 +3,14 @@ import {
   CreateDateColumn,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { PostEntity } from './post.entity';
 import { UserEntity } from './user.entity';
+import { ReplyEntity } from './reply.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class CommentEntity {
@@ -28,4 +31,7 @@ export class CommentEntity {
 
   @ManyToOne(() => UserEntity)
   createdBy: UserEntity;
+
+  @OneToMany(() => ReplyEntity, (reply) => reply.comment)
+  replies: ReplyEntity[];
 }

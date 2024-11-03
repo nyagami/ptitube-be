@@ -17,7 +17,7 @@ export class ReplyEntity {
   @Column()
   content: string;
 
-  @ManyToOne(() => CommentEntity)
+  @ManyToOne(() => CommentEntity, (comment) => comment.replies)
   comment: CommentEntity;
 
   @CreateDateColumn()
