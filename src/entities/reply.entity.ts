@@ -14,7 +14,7 @@ export class ReplyEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ length: 1000 })
   content: string;
 
   @ManyToOne(() => CommentEntity, (comment) => comment.replies)

@@ -256,6 +256,15 @@ export class PostService {
     const queryBuilder = this.commentRepository.createQueryBuilder('comment');
     const [comments, totalItems] = await queryBuilder
       .where('comment.postId = :postId', { postId })
+      .leftJoinAndSelect('comment.createdBy', 'createdBy')
+      .leftJoinAndSelect('createdBy.profile', 'profile')
+      .leftJoinAndMapOne(
+        'comment.latestReply',
+        'comment.replies',
+        'latestReply',
+      )
+      .leftJoinAndSelect('latestReply.createdBy', 'latestReplyCreatedBy')
+      .leftJoinAndSelect('latestReplyCreatedBy.profile', 'latestReplyProfile')
       .loadRelationCountAndMap('comment.replies', 'comment.replies')
       .skip(PAGE_SIZE * getCommentListDto.page)
       .take(PAGE_SIZE)
