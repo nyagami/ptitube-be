@@ -116,6 +116,11 @@ export class PostController {
     return this.postService.dislikePost(req.user.id, id);
   }
 
+  @Get('comment/:id')
+  detailComment(@Param('id') id: number) {
+    return this.postService.getCommentDetail(Number(id));
+  }
+
   @Post('detail/:id/comment')
   @ApiParam({ name: 'id' })
   comment(

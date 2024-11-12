@@ -249,6 +249,24 @@ export class PostService {
     return this.replyRepository.insert(reply);
   }
 
+  async getCommentDetail(commentId: number) {
+    const queryBuilder = this.commentRepository.createQueryBuilder('comment');
+    const comment = await queryBuilder
+      .where('comment.id = :id', { id: commentId })
+      .leftJoinAndSelect('comment.createdBy', 'createdBy')
+      .leftJoinAndSelect('createdBy.profile', 'profile')
+      .leftJoinAndMapOne(
+        'comment.latestReply',
+        'comment.replies',
+        'latestReply',
+      )
+      .leftJoinAndSelect('latestReply.createdBy', 'latestReplyCreatedBy')
+      .leftJoinAndSelect('latestReplyCreatedBy.profile', 'latestReplyProfile')
+      .loadRelationCountAndMap('comment.replies', 'comment.replies')
+      .getOne();
+    return comment;
+  }
+
   async getCommentList(postId: number, getCommentListDto: GetCommentListDto) {
     const post = this.postRepository.findOneBy({ id: postId });
     if (!post) throw new BadRequestException('Post does not exist');
@@ -290,6 +308,7 @@ export class PostService {
       where: {
         comment: { id: getCommentReplyListDto.commentId },
       },
+      relations: { createdBy: { profile: true } },
       skip: PAGE_SIZE * getCommentReplyListDto.page,
       take: PAGE_SIZE,
     });
