@@ -1,4 +1,4 @@
-import { Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { UserEntity } from './user.entity';
 
 @Entity()
@@ -11,4 +11,7 @@ export class FollowingEnity {
 
   @ManyToOne(() => UserEntity, (user) => user.followers)
   follower: UserEntity;
+
+  @Column({ nullable: true })
+  isFollowing: boolean;
 }

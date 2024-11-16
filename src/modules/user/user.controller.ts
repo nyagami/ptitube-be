@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   Patch,
+  Post,
   Request,
   UploadedFiles,
   UseInterceptors,
@@ -55,5 +56,15 @@ export class UserController {
       files.avatar?.[0],
       files.cover?.[0],
     );
+  }
+
+  @Post('follow/:id')
+  follow(@Param('id') id: number, @Request() req) {
+    return this.userService.follow(Number(id), Number(req.user.id));
+  }
+
+  @Post('unfollow/:id')
+  unfollow(@Param('id') id: number, @Request() req) {
+    return this.userService.unfollow(Number(id), Number(req.user.id));
   }
 }

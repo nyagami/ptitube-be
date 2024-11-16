@@ -1,10 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ProfileEntity, UserEntity } from 'src/entities';
+import { FollowingEnity, ProfileEntity, UserEntity } from 'src/entities';
 import { Repository } from 'typeorm';
 import { SignUpDto } from '../auth/auth.dto';
-import { join } from 'path';
-import { mkdirSync, writeFileSync } from 'fs';
 
 @Injectable()
 export class UserService {
@@ -14,6 +12,9 @@ export class UserService {
 
     @InjectRepository(ProfileEntity)
     private profileRepository: Repository<ProfileEntity>,
+
+    @InjectRepository(FollowingEnity)
+    private followingRepository: Repository<FollowingEnity>,
   ) {}
 
   async findOne(email: string) {
@@ -95,5 +96,46 @@ export class UserService {
         isActivated: true,
       },
     );
+  }
+
+  async follow(fromUserId: number, toUserId: number) {
+    if (fromUserId === toUserId) return;
+    const toUser = await this.userRepository.findOneBy({ id: toUserId });
+    if (!toUser) {
+      throw new BadRequestException('User does not exist');
+    }
+    const existedFollowing = await this.followingRepository.findOneBy({
+      followed: { id: toUserId },
+      follower: { id: fromUserId },
+    });
+    if (existedFollowing) {
+      return this.followingRepository.update(
+        { id: existedFollowing.id },
+        {
+          isFollowing: true,
+        },
+      );
+    } else {
+      const following = await this.followingRepository.create({
+        follower: { id: fromUserId },
+        followed: toUser,
+        isFollowing: true,
+      });
+      return this.followingRepository.insert(following);
+    }
+  }
+
+  async unfollow(fromUserId: number, toUserId: number) {
+    if (fromUserId === toUserId) return;
+    const following = await this.followingRepository.findOneBy({
+      followed: { id: toUserId },
+      follower: { id: fromUserId },
+    });
+    if (following) {
+      return this.followingRepository.update(
+        { id: following.id },
+        { isFollowing: false },
+      );
+    }
   }
 }
