@@ -20,11 +20,31 @@ export class UserService {
   async findOne(email: string) {
     return this.userRepository.findOneBy({ email });
   }
-  async get(id: number) {
-    return this.userRepository.findOne({
-      where: { id },
-      relations: { profile: true },
-    });
+  async get(id: number, userId: number) {
+    const queryBuilder = this.userRepository.createQueryBuilder('user');
+    const user = await queryBuilder
+      .where('user.id=:id', { id })
+      .leftJoinAndSelect('user.profile', 'profile')
+      .loadRelationCountAndMap(
+        'user.followers',
+        'user.followers',
+        'followers',
+        (qb) => qb.andWhere('followers.isFollowing = 1'),
+      )
+      .loadRelationCountAndMap(
+        'user.following',
+        'user.following',
+        'following',
+        (qb) => qb.andWhere('following.isFollowing=1'),
+      )
+      .loadRelationCountAndMap(
+        'user.isFollowed',
+        'user.followers',
+        'follower',
+        (qb) => qb.andWhere('follower.id=:id', { id: userId }),
+      )
+      .getOne();
+    return user;
   }
 
   async createUser(

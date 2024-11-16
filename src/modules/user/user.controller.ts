@@ -5,6 +5,7 @@ import {
   Param,
   Patch,
   Post,
+  Req,
   Request,
   UploadedFiles,
   UseInterceptors,
@@ -21,14 +22,14 @@ export class UserController {
   constructor(private userService: UserService) {}
 
   @Get('detail/:id')
-  get(@Param() params: { id: number }) {
-    return this.userService.get(params.id);
+  get(@Param('id') id: number, @Req() req) {
+    return this.userService.get(Number(id), Number(req.user.id));
   }
 
   @Get('me')
   getMe(@Request() req) {
     const user = req.user;
-    return this.userService.get(user.id);
+    return this.userService.get(user.id, user.id);
   }
 
   @ApiBearerAuth()
