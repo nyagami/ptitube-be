@@ -23,6 +23,7 @@ import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { AuthGuard } from './core/guards/auth.guard';
 import { PostModule } from './modules/post/post.module';
 import { PostLikeEntity } from './entities/post.entity';
+import { CommentModule } from './modules/comment/comment.module';
 
 @Module({
   imports: [
@@ -64,6 +65,7 @@ import { PostLikeEntity } from './entities/post.entity';
     }),
     AuthModule,
     PostModule,
+    CommentModule,
   ],
   providers: [
     {

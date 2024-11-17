@@ -12,10 +12,6 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import {
-  CreateCommentDto,
-  CreateReplyDto,
-  GetCommentListDto,
-  GetCommentReplyListDto,
   GetPostListDto,
   GetUserPostListDto,
   SearchPostDto,
@@ -114,53 +110,5 @@ export class PostController {
   @ApiParam({ name: 'id' })
   dislikePost(@Param('id') id: number, @Request() req) {
     return this.postService.dislikePost(req.user.id, id);
-  }
-
-  @Get('comment/:id')
-  detailComment(@Param('id') id: number) {
-    return this.postService.getCommentDetail(Number(id));
-  }
-
-  @Post('detail/:id/comment')
-  @ApiParam({ name: 'id' })
-  comment(
-    @Param('id') id: number,
-    @Body() createCommentDto: CreateCommentDto,
-    @Request() req,
-  ) {
-    return this.postService.createComment(
-      Number(id),
-      req.user.id,
-      createCommentDto.content,
-    );
-  }
-
-  @Post('detail/:id/reply')
-  reply(
-    @Param('id') id: number,
-    @Body() createReplyDto: CreateReplyDto,
-    @Request() req,
-  ) {
-    return this.postService.createReply(
-      createReplyDto.commentId,
-      req.user.id,
-      createReplyDto.content,
-    );
-  }
-
-  @Get('detail/:id/comment-list')
-  listComment(
-    @Param('id') id: number,
-    @Query() getCommentListDto: GetCommentListDto,
-  ) {
-    return this.postService.getCommentList(Number(id), getCommentListDto);
-  }
-
-  @Get('detail/:id/comment-reply-list')
-  commentDetail(
-    @Param('id') id: number,
-    @Query() getCommentReplyListDto: GetCommentReplyListDto,
-  ) {
-    return this.postService.getReplyList(getCommentReplyListDto);
   }
 }

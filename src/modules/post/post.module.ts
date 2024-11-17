@@ -19,8 +19,6 @@ import { PostLikeEntity } from 'src/entities/post.entity';
       UserEntity,
       VideoEntity,
       PostLikeEntity,
-      CommentEntity,
-      ReplyEntity,
       FollowingEnity,
     ]),
   ],
