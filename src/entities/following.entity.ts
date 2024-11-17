@@ -12,6 +12,6 @@ export class FollowingEnity {
   @ManyToOne(() => UserEntity, (user) => user.followers)
   follower: UserEntity;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'boolean' })
   isFollowing: boolean;
 }

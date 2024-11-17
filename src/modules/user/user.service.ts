@@ -29,7 +29,7 @@ export class UserService {
         'user.followers',
         'user.followers',
         'followers',
-        (qb) => qb.andWhere('followers.isFollowing = 1'),
+        (qb) => qb.andWhere('followers.isFollowing=1'),
       )
       .loadRelationCountAndMap(
         'user.following',
@@ -37,14 +37,13 @@ export class UserService {
         'following',
         (qb) => qb.andWhere('following.isFollowing=1'),
       )
-      .loadRelationCountAndMap(
-        'user.isFollowed',
-        'user.followers',
-        'follower',
-        (qb) => qb.andWhere('follower.id=:id', { id: userId }),
-      )
       .getOne();
-    return user;
+    const following = await this.followingRepository.findOneBy({
+      followed: { id },
+      follower: { id: userId },
+    });
+
+    return { ...user, isFollowed: Boolean(following?.isFollowing) };
   }
 
   async createUser(

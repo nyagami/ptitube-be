@@ -61,11 +61,11 @@ export class UserController {
 
   @Post('follow/:id')
   follow(@Param('id') id: number, @Request() req) {
-    return this.userService.follow(Number(id), Number(req.user.id));
+    return this.userService.follow(Number(req.user.id), Number(id));
   }
 
   @Post('unfollow/:id')
   unfollow(@Param('id') id: number, @Request() req) {
-    return this.userService.unfollow(Number(id), Number(req.user.id));
+    return this.userService.unfollow(Number(req.user.id), Number(id));
   }
 }
