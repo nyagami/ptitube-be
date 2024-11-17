@@ -10,6 +10,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import {
   CommentEntity,
   FollowingEnity,
+  NotificationEntity,
   PostEntity,
   ProfileEntity,
   ReplyEntity,
@@ -46,6 +47,7 @@ import { NotificationModule } from './modules/notification/notification.module';
         VideoEntity,
         CommentEntity,
         ReplyEntity,
+        NotificationEntity,
       ],
       synchronize: true,
       migrations: ['src/database/migrations/*.ts'],

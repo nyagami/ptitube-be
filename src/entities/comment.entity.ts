@@ -10,7 +10,6 @@ import {
 import { PostEntity } from './post.entity';
 import { UserEntity } from './user.entity';
 import { ReplyEntity } from './reply.entity';
-import { Exclude } from 'class-transformer';
 
 @Entity()
 export class CommentEntity {
