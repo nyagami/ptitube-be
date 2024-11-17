@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   CommentEntity,
+  NotificationEntity,
   PostEntity,
   ReplyEntity,
   UserEntity,
@@ -10,6 +11,8 @@ import { Repository } from 'typeorm';
 import { GetCommentListDto, GetCommentReplyListDto } from './comment.dto';
 import { PageDto } from 'src/core/dto/page.dto';
 import { PAGE_SIZE } from 'src/core/constants';
+import { NotificationAction } from 'src/entities/notification.entity';
+import { NotificationService } from '../notification/notification.service';
 
 @Injectable()
 export class CommentSerivce {
@@ -25,31 +28,79 @@ export class CommentSerivce {
 
     @InjectRepository(ReplyEntity)
     private replyRepository: Repository<ReplyEntity>,
+
+    @InjectRepository(NotificationEntity)
+    private notificationRepository: Repository<NotificationEntity>,
+
+    private notificationService: NotificationService,
   ) {}
 
   async createComment(postId: number, userId: number, content: string) {
-    const post = await this.postRepository.findOneBy({ id: postId });
+    const post = await this.postRepository.findOne({
+      where: { id: postId },
+      relations: { createdBy: true },
+    });
     if (!post) throw new BadRequestException('Post does not exist');
-    const user = await this.userRepositoy.findOneBy({ id: userId });
+    const user = await this.userRepositoy.findOne({
+      where: { id: userId },
+      relations: { profile: true },
+    });
     const comment = await this.commentRepository.create({
       post,
       createdBy: user,
       content,
     });
 
-    return this.commentRepository.insert(comment);
+    await this.commentRepository.insert(comment);
+    const notification = this.notificationRepository.create({
+      title: comment.content.slice(0, 255),
+      action: NotificationAction.COMMENT,
+      actor: user,
+      receiver: post.createdBy,
+      post: post,
+    });
+    await this.notificationRepository.insert(notification);
+
+    return this.notificationService.sendNotification({
+      token: post.createdBy.notificationToken,
+      title: `${user.profile.displayName} commented`,
+      body: comment.content,
+      imageUrl: process.env.HOST + post.thumbnailPath,
+    });
   }
 
   async createReply(commentId: number, userId: number, content: string) {
-    const comment = await this.commentRepository.findOneBy({ id: commentId });
+    const comment = await this.commentRepository.findOne({
+      where: { id: commentId },
+      relations: { createdBy: true, post: true },
+    });
     if (!comment) throw new BadRequestException('Comment does not exist');
-    const user = await this.userRepositoy.findOneBy({ id: userId });
+    const user = await this.userRepositoy.findOne({
+      where: { id: userId },
+      relations: { profile: true },
+    });
     const reply = await this.replyRepository.create({
       comment,
       createdBy: user,
       content,
     });
-    return this.replyRepository.insert(reply);
+    this.replyRepository.insert(reply);
+
+    const notification = this.notificationRepository.create({
+      title: reply.content.slice(0, 255),
+      action: NotificationAction.REPLY,
+      actor: user,
+      receiver: comment.createdBy,
+      post: comment.post,
+    });
+    await this.notificationRepository.insert(notification);
+
+    return this.notificationService.sendNotification({
+      token: comment.createdBy.notificationToken,
+      title: `${user.profile.displayName} replied`,
+      body: reply.content,
+      imageUrl: process.env.HOST + comment.post.thumbnailPath,
+    });
   }
 
   async getCommentDetail(commentId: number) {

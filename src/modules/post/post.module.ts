@@ -3,23 +3,25 @@ import { PostService } from './post.services';
 import { PostController } from './post.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import {
-  CommentEntity,
   FollowingEnity,
+  NotificationEntity,
   PostEntity,
-  ReplyEntity,
   UserEntity,
   VideoEntity,
 } from 'src/entities';
 import { PostLikeEntity } from 'src/entities/post.entity';
+import { NotificationModule } from '../notification/notification.module';
 
 @Module({
   imports: [
+    NotificationModule,
     TypeOrmModule.forFeature([
       PostEntity,
       UserEntity,
       VideoEntity,
       PostLikeEntity,
       FollowingEnity,
+      NotificationEntity,
     ]),
   ],
   providers: [PostService],

@@ -3,10 +3,9 @@ import { GetUserPostListDto, UpdatePostDto, UploadPostDto } from './post.dto';
 import * as ffmpeg from 'fluent-ffmpeg';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
-  CommentEntity,
   FollowingEnity,
+  NotificationEntity,
   PostEntity,
-  ReplyEntity,
   UserEntity,
   VideoEntity,
 } from 'src/entities';
@@ -15,6 +14,8 @@ import { PAGE_SIZE } from 'src/core/constants';
 import { PageDto } from 'src/core/dto/page.dto';
 import { resolveFileServePath } from 'src/utils/fileUtils';
 import { PostLikeEntity } from 'src/entities/post.entity';
+import { NotificationAction } from 'src/entities/notification.entity';
+import { NotificationService } from '../notification/notification.service';
 
 @Injectable()
 export class PostService {
@@ -33,6 +34,11 @@ export class PostService {
 
     @InjectRepository(FollowingEnity)
     private followingRepository: Repository<FollowingEnity>,
+
+    @InjectRepository(NotificationEntity)
+    private notificationRepository: Repository<NotificationEntity>,
+
+    private notificationService: NotificationService,
   ) {}
 
   private transcodeVideo(inputPath, outputPath, resolution) {
@@ -68,7 +74,10 @@ export class PostService {
     video: Express.Multer.File,
     userId: number,
   ) {
-    const user = await this.userRepositoy.findOneBy({ id: userId });
+    const user = await this.userRepositoy.findOne({
+      where: { id: userId },
+      relations: { profile: true },
+    });
     const videoMetadata = await this.getVideoMetadata(video.path);
 
     const post = await this.postRepository.create({
@@ -89,6 +98,33 @@ export class PostService {
       resolution: `${videoMetadata.streams?.[0]?.width}x${videoMetadata.streams?.[0]?.height}`,
     });
     await this.videoRepository.insert(originalVideo);
+
+    const followers = (
+      await this.followingRepository.find({
+        where: { followed: user },
+        relations: { follower: true },
+      })
+    ).map((following) => following.follower);
+
+    const notifications = followers.map((follower) => ({
+      action: NotificationAction.POST,
+      post,
+      actor: user,
+      receiver: follower,
+      title: post.title,
+    }));
+    const notificationEntities =
+      this.notificationRepository.create(notifications);
+
+    await this.notificationRepository.insert(notificationEntities);
+    return this.notificationService.sendMutipleNotifications({
+      tokens: followers
+        .filter((follower) => follower.notificationToken)
+        .map((follower) => follower.notificationToken),
+      title: `${user.profile.displayName} posted a video`,
+      body: post.title,
+      imageUrl: process.env.HOST + post.thumbnailPath,
+    });
   }
 
   async getPostList(page: number) {

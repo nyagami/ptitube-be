@@ -19,6 +19,9 @@ export class NotificationEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column({ length: 255 })
+  title: string;
+
   @CreateDateColumn()
   createdAt: Date;
 
@@ -34,6 +37,6 @@ export class NotificationEntity {
   @Column()
   action: NotificationAction;
 
-  @Column({ type: 'boolean' })
+  @Column({ type: 'boolean', default: false })
   isRead: boolean;
 }
