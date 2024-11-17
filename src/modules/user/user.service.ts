@@ -40,6 +40,17 @@ export class UserService {
         'following',
         (qb) => qb.andWhere('following.isFollowing=1'),
       )
+      .addSelect(
+        (sub) =>
+          sub
+            .select('isFollowing')
+            .from(FollowingEnity, 'FL')
+            .where('FL.followed.id = :id AND FL.follower.id = :userId', {
+              id,
+              userId,
+            }),
+        'isFollowed',
+      )
       .getOne();
     const following = await this.followingRepository.findOneBy({
       followed: { id },

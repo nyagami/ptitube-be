@@ -2,7 +2,6 @@ import {
   Column,
   Entity,
   JoinColumn,
-  ManyToOne,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -11,6 +10,7 @@ import { ProfileEntity } from './profile.entity';
 import { FollowingEnity } from './following.entity';
 import { Exclude } from 'class-transformer';
 import { PostLikeEntity } from './post.entity';
+import { NotificationEntity } from './notification.entity';
 
 @Entity()
 export class UserEntity {
@@ -40,6 +40,10 @@ export class UserEntity {
   @OneToMany(() => FollowingEnity, (following) => following.follower)
   following: FollowingEnity[];
 
+  @Exclude()
   @Column({ nullable: true, length: 255 })
-  notificationToken: string;
+  notificationToken?: string;
+
+  @OneToMany(() => NotificationEntity, (notification) => notification.receiver)
+  nofications: NotificationEntity[];
 }
