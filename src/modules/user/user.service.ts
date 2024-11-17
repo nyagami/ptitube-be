@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { FollowingEnity, ProfileEntity, UserEntity } from 'src/entities';
 import { Repository } from 'typeorm';
 import { SignUpDto } from '../auth/auth.dto';
+import { NotificationService } from '../notification/notification.service';
 
 @Injectable()
 export class UserService {
@@ -15,6 +16,8 @@ export class UserService {
 
     @InjectRepository(FollowingEnity)
     private followingRepository: Repository<FollowingEnity>,
+
+    private notificationService: NotificationService,
   ) {}
 
   async findOne(email: string) {
@@ -119,7 +122,14 @@ export class UserService {
 
   async follow(fromUserId: number, toUserId: number) {
     if (fromUserId === toUserId) return;
-    const toUser = await this.userRepository.findOneBy({ id: toUserId });
+    const fromUser = await this.userRepository.findOne({
+      where: { id: fromUserId },
+      relations: { profile: true },
+    });
+    const toUser = await this.userRepository.findOne({
+      where: { id: toUserId },
+      relations: { profile: true },
+    });
     if (!toUser) {
       throw new BadRequestException('User does not exist');
     }
@@ -128,7 +138,7 @@ export class UserService {
       follower: { id: fromUserId },
     });
     if (existedFollowing) {
-      return this.followingRepository.update(
+      await this.followingRepository.update(
         { id: existedFollowing.id },
         {
           isFollowing: true,
@@ -140,7 +150,15 @@ export class UserService {
         followed: toUser,
         isFollowing: true,
       });
-      return this.followingRepository.insert(following);
+      await this.followingRepository.insert(following);
+    }
+    if (toUser.notificationToken) {
+      this.notificationService.sendNotification({
+        token: toUser.notificationToken,
+        title: 'New follower',
+        body: `${fromUser.profile.displayName} has just followed you`,
+        imageUrl: process.env.HOST + fromUser.profile.avatarPath,
+      });
     }
   }
 

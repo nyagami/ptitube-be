@@ -24,6 +24,8 @@ import { AuthGuard } from './core/guards/auth.guard';
 import { PostModule } from './modules/post/post.module';
 import { PostLikeEntity } from './entities/post.entity';
 import { CommentModule } from './modules/comment/comment.module';
+import * as admin from 'firebase-admin/app';
+import { NotificationModule } from './modules/notification/notification.module';
 
 @Module({
   imports: [
@@ -66,6 +68,7 @@ import { CommentModule } from './modules/comment/comment.module';
     AuthModule,
     PostModule,
     CommentModule,
+    NotificationModule,
   ],
   providers: [
     {
@@ -78,4 +81,11 @@ import { CommentModule } from './modules/comment/comment.module';
     },
   ],
 })
-export class AppModule {}
+export class AppModule {
+  constructor() {
+    const credentialFile = require(process.env.GOOGLE_APPLICATION_CREDENTIALS);
+    admin.initializeApp({
+      credential: admin.cert(credentialFile),
+    });
+  }
+}

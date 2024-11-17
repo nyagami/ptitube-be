@@ -5,7 +5,6 @@ import {
 } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
-import { MailerService } from '@nestjs-modules/mailer';
 import { SignUpDto } from './auth.dto';
 
 @Injectable()
@@ -13,7 +12,6 @@ export class AuthService {
   constructor(
     private userService: UserService,
     private jwtService: JwtService,
-    private mailService: MailerService,
   ) {}
 
   async signIn(

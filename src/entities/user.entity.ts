@@ -39,4 +39,7 @@ export class UserEntity {
 
   @OneToMany(() => FollowingEnity, (following) => following.follower)
   following: FollowingEnity[];
+
+  @Column({ nullable: true, length: 255 })
+  notificationToken: string;
 }
