@@ -4,6 +4,7 @@ import { PostController } from './post.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import {
   CommentEntity,
+  FollowingEnity,
   PostEntity,
   ReplyEntity,
   UserEntity,
@@ -20,6 +21,7 @@ import { PostLikeEntity } from 'src/entities/post.entity';
       PostLikeEntity,
       CommentEntity,
       ReplyEntity,
+      FollowingEnity,
     ]),
   ],
   providers: [PostService],

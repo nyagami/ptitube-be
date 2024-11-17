@@ -10,6 +10,7 @@ import * as ffmpeg from 'fluent-ffmpeg';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   CommentEntity,
+  FollowingEnity,
   PostEntity,
   ReplyEntity,
   UserEntity,
@@ -41,6 +42,9 @@ export class PostService {
 
     @InjectRepository(ReplyEntity)
     private replyRepository: Repository<ReplyEntity>,
+
+    @InjectRepository(FollowingEnity)
+    private followingRepository: Repository<FollowingEnity>,
   ) {}
 
   private transcodeVideo(inputPath, outputPath, resolution) {
@@ -203,8 +207,19 @@ export class PostService {
       post: { id: post.id },
       user: { id: userId },
     });
+    const following = await this.followingRepository.findOneBy({
+      followed: { id: post.createdBy.id },
+      follower: { id: userId },
+    });
+
     return {
-      post: post,
+      post: {
+        ...post,
+        createdBy: {
+          ...post.createdBy,
+          isFollowed: Boolean(following?.isFollowing),
+        },
+      },
       isLiked: like != null,
       likes: post.likes,
     };
