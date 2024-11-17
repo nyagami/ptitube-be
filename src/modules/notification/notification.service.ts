@@ -25,7 +25,11 @@ export class NotificationService {
     private userRepository: Repository<UserEntity>,
   ) {}
 
-  setNotificationToken(token: string, userId: number) {
+  async setNotificationToken(token: string, userId: number) {
+    await this.userRepository
+      .createQueryBuilder()
+      .update({ notificationToken: null })
+      .where('id <> :id AND notificationToken = :token', { token, id: userId });
     return this.userRepository.update(
       { id: userId },
       { notificationToken: token },
