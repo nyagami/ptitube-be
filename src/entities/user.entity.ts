@@ -34,9 +34,9 @@ export class UserEntity {
   @OneToMany(() => PostLikeEntity, (like) => like.user)
   likes: PostLikeEntity[];
 
-  @OneToMany(() => FollowingEnity, (following) => following.follower)
+  @OneToMany(() => FollowingEnity, (following) => following.followed)
   followers: FollowingEnity[];
 
-  @OneToMany(() => FollowingEnity, (following) => following.followed)
+  @OneToMany(() => FollowingEnity, (following) => following.follower)
   following: FollowingEnity[];
 }

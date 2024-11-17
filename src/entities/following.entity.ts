@@ -6,10 +6,10 @@ export class FollowingEnity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => UserEntity, (user) => user.following)
+  @ManyToOne(() => UserEntity, (user) => user.followers)
   followed: UserEntity;
 
-  @ManyToOne(() => UserEntity, (user) => user.followers)
+  @ManyToOne(() => UserEntity, (user) => user.following)
   follower: UserEntity;
 
   @Column({ nullable: true, type: 'boolean' })
