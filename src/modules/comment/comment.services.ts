@@ -8,11 +8,7 @@ import {
   UserEntity,
 } from 'src/entities';
 import { Repository } from 'typeorm';
-import {
-  GetCommentListDto,
-  GetCommentReplyListDto,
-  UpdateCommentDto,
-} from './comment.dto';
+import { GetCommentListDto, GetCommentReplyListDto } from './comment.dto';
 import { PageDto } from 'src/core/dto/page.dto';
 import { PAGE_SIZE } from 'src/core/constants';
 import { NotificationAction } from 'src/entities/notification.entity';
@@ -126,7 +122,7 @@ export class CommentSerivce {
   }
 
   async getCommentList(getCommentListDto: GetCommentListDto) {
-    const post = this.postRepository.findOneBy({
+    const post = await this.postRepository.findOneBy({
       id: getCommentListDto.postId,
     });
     if (!post) throw new BadRequestException('Post does not exist');
@@ -160,7 +156,7 @@ export class CommentSerivce {
   }
 
   async getReplyList(getCommentReplyListDto: GetCommentReplyListDto) {
-    const comment = this.commentRepository.findOneBy({
+    const comment = await this.commentRepository.findOneBy({
       id: getCommentReplyListDto.commentId,
     });
     if (!comment) throw new BadRequestException('Post does not exist');
@@ -184,7 +180,7 @@ export class CommentSerivce {
   }
 
   async updateComment(userId: number, commentId: number, content: string) {
-    const comment = this.commentRepository.findOne({
+    const comment = await this.commentRepository.findOne({
       where: { id: commentId, createdBy: { id: userId } },
     });
     if (!comment) throw new BadRequestException('Comment does not exist');
@@ -192,7 +188,7 @@ export class CommentSerivce {
   }
 
   async updateReply(userId: number, replyId: number, content) {
-    const reply = this.replyRepository.findOne({
+    const reply = await this.replyRepository.findOne({
       where: { id: replyId, createdBy: { id: userId } },
     });
 
@@ -201,7 +197,7 @@ export class CommentSerivce {
   }
 
   async deleteComment(userId: number, commentId: number) {
-    const comment = this.commentRepository.findOne({
+    const comment = await this.commentRepository.findOne({
       where: { id: commentId, createdBy: { id: userId } },
     });
     if (!comment) throw new BadRequestException('Comment does not exist');
@@ -209,7 +205,7 @@ export class CommentSerivce {
   }
 
   async deleteReply(userId: number, replyId: number) {
-    const reply = this.replyRepository.findOne({
+    const reply = await this.replyRepository.findOne({
       where: { id: replyId, createdBy: { id: userId } },
     });
 

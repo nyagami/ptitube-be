@@ -256,10 +256,21 @@ export class PostService {
     const like = this.postLikeRepository.create({ post, user });
     return this.postLikeRepository.insert(like);
   }
+
   async dislikePost(userId: number, postId: number) {
     return this.postLikeRepository.delete({
       post: { id: postId },
       user: { id: userId },
     });
+  }
+
+  async deletePost(userId: number, postId: number) {
+    const post = await this.postRepository.findOneBy({
+      id: postId,
+      createdBy: { id: userId },
+    });
+    if (!post) throw new BadRequestException('Not granted');
+
+    return this.postRepository.delete({ id: postId });
   }
 }

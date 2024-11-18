@@ -52,7 +52,7 @@ export class CommentController {
     return this.commentService.getReplyList(getCommentReplyListDto);
   }
 
-  @Get('/:id')
+  @Get('detail/:id')
   detailComment(@Param('id') id: number) {
     return this.commentService.getCommentDetail(Number(id));
   }

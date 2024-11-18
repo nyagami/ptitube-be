@@ -1,7 +1,7 @@
 import {
-  BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -110,5 +110,10 @@ export class PostController {
   @ApiParam({ name: 'id' })
   dislikePost(@Param('id') id: number, @Request() req) {
     return this.postService.dislikePost(req.user.id, id);
+  }
+
+  @Delete('detail/:id')
+  deletePost(@Param('id') id: number, @Request() req) {
+    return this.postService.deletePost(Number(id), req.user.id);
   }
 }
