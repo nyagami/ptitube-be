@@ -6,12 +6,16 @@ import {
   Query,
   Request,
   Controller,
+  Patch,
+  Delete,
 } from '@nestjs/common';
 import {
   CreateCommentDto,
   CreateReplyDto,
   GetCommentListDto,
   GetCommentReplyListDto,
+  UpdateCommentDto,
+  UpdateReplyDto,
 } from './comment.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { CommentSerivce } from './comment.services';
@@ -51,5 +55,41 @@ export class CommentController {
   @Get('/:id')
   detailComment(@Param('id') id: number) {
     return this.commentService.getCommentDetail(Number(id));
+  }
+
+  @Patch('/:id')
+  updateComment(
+    @Param('id') id: number,
+    @Body() dto: UpdateCommentDto,
+    @Request() req,
+  ) {
+    return this.commentService.updateComment(
+      req.user.id,
+      Number(id),
+      dto.content,
+    );
+  }
+
+  @Delete('/:id')
+  deleteComment(@Param('id') id: number, @Request() req) {
+    return this.commentService.deleteComment(req.user.id, Number(id));
+  }
+
+  @Patch('/reply/:id')
+  updateReply(
+    @Param('id') id: number,
+    @Body() dto: UpdateReplyDto,
+    @Request() req,
+  ) {
+    return this.commentService.updateReply(
+      req.user.id,
+      Number(id),
+      dto.content,
+    );
+  }
+
+  @Delete('/reply/:id')
+  deleteReply(@Param('id') id: number, @Request() req) {
+    return this.commentService.deleteReply(req.user.id, Number(id));
   }
 }

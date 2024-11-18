@@ -31,3 +31,16 @@ export class GetCommentReplyListDto {
   @ApiProperty({ default: 1 })
   commentId: number;
 }
+
+export class UpdateCommentDto {
+  @ApiProperty({ default: 'comment' })
+  content: string;
+
+  @ApiProperty({ default: 1 })
+  commentId: number;
+}
+
+export class UpdateReplyDto {
+  @ApiProperty({ default: 'reply' })
+  content: string;
+}

@@ -8,7 +8,11 @@ import {
   UserEntity,
 } from 'src/entities';
 import { Repository } from 'typeorm';
-import { GetCommentListDto, GetCommentReplyListDto } from './comment.dto';
+import {
+  GetCommentListDto,
+  GetCommentReplyListDto,
+  UpdateCommentDto,
+} from './comment.dto';
 import { PageDto } from 'src/core/dto/page.dto';
 import { PAGE_SIZE } from 'src/core/constants';
 import { NotificationAction } from 'src/entities/notification.entity';
@@ -177,5 +181,39 @@ export class CommentSerivce {
       data: replies,
     };
     return response;
+  }
+
+  async updateComment(userId: number, commentId: number, content: string) {
+    const comment = this.commentRepository.findOne({
+      where: { id: commentId, createdBy: { id: userId } },
+    });
+    if (!comment) throw new BadRequestException('Comment does not exist');
+    return this.commentRepository.update({ id: commentId }, { content });
+  }
+
+  async updateReply(userId: number, replyId: number, content) {
+    const reply = this.replyRepository.findOne({
+      where: { id: replyId, createdBy: { id: userId } },
+    });
+
+    if (!reply) throw new BadRequestException('Reply doesnt not exist');
+    return this.replyRepository.update({ id: replyId }, { content });
+  }
+
+  async deleteComment(userId: number, commentId: number) {
+    const comment = this.commentRepository.findOne({
+      where: { id: commentId, createdBy: { id: userId } },
+    });
+    if (!comment) throw new BadRequestException('Comment does not exist');
+    return this.commentRepository.delete({ id: commentId });
+  }
+
+  async deleteReply(userId: number, replyId: number) {
+    const reply = this.replyRepository.findOne({
+      where: { id: replyId, createdBy: { id: userId } },
+    });
+
+    if (!reply) throw new BadRequestException('Reply doesnt not exist');
+    return this.replyRepository.delete({ id: replyId });
   }
 }
