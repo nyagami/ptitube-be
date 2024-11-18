@@ -162,14 +162,14 @@ export class UserService {
         isFollowing: true,
       });
       await this.followingRepository.insert(following);
-    }
-    if (toUser.notificationToken) {
-      this.notificationService.sendNotification({
-        token: toUser.notificationToken,
-        title: 'New follower',
-        body: `${fromUser.profile.displayName} has just followed you`,
-        imageUrl: process.env.HOST + fromUser.profile.avatarPath,
-      });
+      if (toUser.notificationToken) {
+        this.notificationService.sendNotification({
+          token: toUser.notificationToken,
+          title: 'New follower',
+          body: `${fromUser.profile.displayName} has just followed you`,
+          imageUrl: process.env.HOST + fromUser.profile.avatarPath,
+        });
+      }
     }
   }
 

@@ -52,21 +52,23 @@ export class CommentSerivce {
     });
 
     await this.commentRepository.insert(comment);
-    const notification = this.notificationRepository.create({
-      title: comment.content.slice(0, 255),
-      action: NotificationAction.COMMENT,
-      actor: user,
-      receiver: post.createdBy,
-      post: post,
-    });
-    await this.notificationRepository.insert(notification);
+    if (post.createdBy.id !== userId) {
+      const notification = this.notificationRepository.create({
+        title: comment.content.slice(0, 255),
+        action: NotificationAction.COMMENT,
+        actor: user,
+        receiver: post.createdBy,
+        post: post,
+      });
+      await this.notificationRepository.insert(notification);
 
-    return this.notificationService.sendNotification({
-      token: post.createdBy.notificationToken,
-      title: `${user.profile.displayName} commented`,
-      body: comment.content,
-      imageUrl: process.env.HOST + post.thumbnailPath,
-    });
+      return this.notificationService.sendNotification({
+        token: post.createdBy.notificationToken,
+        title: `${user.profile.displayName} commented`,
+        body: comment.content,
+        imageUrl: process.env.HOST + post.thumbnailPath,
+      });
+    }
   }
 
   async createReply(commentId: number, userId: number, content: string) {
@@ -84,23 +86,24 @@ export class CommentSerivce {
       createdBy: user,
       content,
     });
-    this.replyRepository.insert(reply);
+    await this.replyRepository.insert(reply);
+    if (comment.createdBy.id !== userId) {
+      const notification = this.notificationRepository.create({
+        title: reply.content.slice(0, 255),
+        action: NotificationAction.REPLY,
+        actor: user,
+        receiver: comment.createdBy,
+        post: comment.post,
+      });
+      await this.notificationRepository.insert(notification);
 
-    const notification = this.notificationRepository.create({
-      title: reply.content.slice(0, 255),
-      action: NotificationAction.REPLY,
-      actor: user,
-      receiver: comment.createdBy,
-      post: comment.post,
-    });
-    await this.notificationRepository.insert(notification);
-
-    return this.notificationService.sendNotification({
-      token: comment.createdBy.notificationToken,
-      title: `${user.profile.displayName} replied`,
-      body: reply.content,
-      imageUrl: process.env.HOST + comment.post.thumbnailPath,
-    });
+      return this.notificationService.sendNotification({
+        token: comment.createdBy.notificationToken,
+        title: `${user.profile.displayName} replied`,
+        body: reply.content,
+        imageUrl: process.env.HOST + comment.post.thumbnailPath,
+      });
+    }
   }
 
   async getCommentDetail(commentId: number) {
