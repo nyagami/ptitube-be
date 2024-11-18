@@ -57,7 +57,11 @@ export class UserService {
       follower: { id: userId },
     });
 
-    return { ...user, isFollowed: Boolean(following?.isFollowing) };
+    Object.assign(user, {
+      ...user,
+      isFollowed: Boolean(following?.isFollowing),
+    });
+    return user;
   }
 
   async createUser(
