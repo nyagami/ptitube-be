@@ -34,7 +34,9 @@ export class NotificationService {
     await this.userRepository
       .createQueryBuilder()
       .update({ notificationToken: null })
-      .where('id <> :id AND notificationToken = :token', { token, id: userId });
+      .where('id <> :id', { id: userId })
+      .andWhere('notificationToken = :token', { token })
+      .execute();
     return this.userRepository.update(
       { id: userId },
       { notificationToken: token },
