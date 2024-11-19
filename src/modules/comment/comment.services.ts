@@ -61,13 +61,14 @@ export class CommentSerivce {
         post: post,
       });
       await this.notificationRepository.insert(notification);
-
-      return this.notificationService.sendNotification({
-        token: post.createdBy.notificationToken,
-        title: `${user.profile.displayName} commented`,
-        body: comment.content,
-        imageUrl: process.env.HOST + post.thumbnailPath,
-      });
+      if (post.createdBy.notificationToken) {
+        return this.notificationService.sendNotification({
+          token: post.createdBy.notificationToken,
+          title: `${user.profile.displayName} commented`,
+          body: comment.content,
+          imageUrl: process.env.HOST + post.thumbnailPath,
+        });
+      }
     }
   }
 
@@ -97,12 +98,14 @@ export class CommentSerivce {
       });
       await this.notificationRepository.insert(notification);
 
-      return this.notificationService.sendNotification({
-        token: comment.createdBy.notificationToken,
-        title: `${user.profile.displayName} replied`,
-        body: reply.content,
-        imageUrl: process.env.HOST + comment.post.thumbnailPath,
-      });
+      if (comment.createdBy.notificationToken) {
+        return this.notificationService.sendNotification({
+          token: comment.createdBy.notificationToken,
+          title: `${user.profile.displayName} replied`,
+          body: reply.content,
+          imageUrl: process.env.HOST + comment.post.thumbnailPath,
+        });
+      }
     }
   }
 

@@ -117,14 +117,17 @@ export class PostService {
       this.notificationRepository.create(notifications);
 
     await this.notificationRepository.insert(notificationEntities);
-    return this.notificationService.sendMutipleNotifications({
-      tokens: followers
-        .filter((follower) => follower.notificationToken)
-        .map((follower) => follower.notificationToken),
-      title: `${user.profile.displayName} posted a video`,
-      body: post.title,
-      imageUrl: process.env.HOST + post.thumbnailPath,
-    });
+    const tokens = followers
+      .filter((follower) => follower.notificationToken)
+      .map((follower) => follower.notificationToken);
+    if (tokens.length) {
+      return this.notificationService.sendMutipleNotifications({
+        tokens: tokens,
+        title: `${user.profile.displayName} posted a video`,
+        body: post.title,
+        imageUrl: process.env.HOST + post.thumbnailPath,
+      });
+    }
   }
 
   async getPostList(page: number) {
