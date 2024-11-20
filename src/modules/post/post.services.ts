@@ -96,6 +96,8 @@ export class PostService {
       mimeType: video.mimetype,
       filename: video.filename,
       resolution: `${videoMetadata.streams?.[0]?.width}x${videoMetadata.streams?.[0]?.height}`,
+      height: videoMetadata.streams?.[0]?.height,
+      width: videoMetadata.streams?.[0]?.width,
     });
     await this.videoRepository.insert(originalVideo);
 

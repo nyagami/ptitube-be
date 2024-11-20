@@ -15,6 +15,12 @@ export class VideoEntity {
   @Column()
   resolution?: string;
 
+  @Column({ default: 720 })
+  height: number;
+
+  @Column({ default: 1280 })
+  width: number;
+
   @Column()
   filename: string;
 
