@@ -32,6 +32,11 @@ export class NotificationController {
     }
   }
 
+  @Get('count')
+  count(@Request() req) {
+    return this.notificationSerivce.countUnread(req.user.id);
+  }
+
   @Get('list')
   getNotificationList(
     @Query() getNotificationListDto: GetNotificationListDto,

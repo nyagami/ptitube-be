@@ -75,6 +75,7 @@ export class NotificationService {
     return this.notificationEntity.count({
       where: {
         receiver: { id: userId },
+        isRead: false,
       },
     });
   }
@@ -85,7 +86,7 @@ export class NotificationService {
         where: {
           receiver: { id: userId },
         },
-        relations: { actor: true, receiver: true, post: true },
+        relations: { actor: { profile: true }, post: true },
         take: PAGE_SIZE,
         skip: page * PAGE_SIZE,
         order: { createdAt: 'desc' },
