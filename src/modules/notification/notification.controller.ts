@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -61,5 +62,10 @@ export class NotificationController {
   @Post('read-all')
   readAll(@Request() req) {
     return this.notificationSerivce.readAll(req.user.id);
+  }
+
+  @Delete(':id')
+  delete(@Param('id') id: number, @Request() req) {
+    return this.delete(Number(id), req.user.id);
   }
 }

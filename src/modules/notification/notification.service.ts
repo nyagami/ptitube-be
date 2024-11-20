@@ -27,7 +27,7 @@ export class NotificationService {
     private userRepository: Repository<UserEntity>,
 
     @InjectRepository(NotificationEntity)
-    private notificationEntity: Repository<NotificationEntity>,
+    private notificationRepository: Repository<NotificationEntity>,
   ) {}
 
   async setNotificationToken(token: string, userId: number) {
@@ -72,7 +72,7 @@ export class NotificationService {
   }
 
   async countUnread(userId: number) {
-    return this.notificationEntity.count({
+    return this.notificationRepository.count({
       where: {
         receiver: { id: userId },
         isRead: false,
@@ -82,7 +82,7 @@ export class NotificationService {
 
   async list(userId: number, page: number) {
     const [notifications, totalItems] =
-      await this.notificationEntity.findAndCount({
+      await this.notificationRepository.findAndCount({
         where: {
           receiver: { id: userId },
         },
@@ -105,7 +105,7 @@ export class NotificationService {
   }
 
   async read(userId: number, notificationId: number) {
-    const notification = await this.notificationEntity.findOne({
+    const notification = await this.notificationRepository.findOne({
       where: { id: notificationId },
       relations: {
         receiver: true,
@@ -116,16 +116,28 @@ export class NotificationService {
       throw new BadRequestException('Notification does not exist');
     if (notification.receiver.id !== userId)
       throw new BadRequestException('Not granted');
-    return this.notificationEntity.update(
+    return this.notificationRepository.update(
       { id: notificationId },
       { isRead: true },
     );
   }
 
   async readAll(userId: number) {
-    return this.notificationEntity.update(
+    return this.notificationRepository.update(
       { receiver: { id: userId } },
       { isRead: true },
     );
+  }
+
+  async delete(notificationId: number, userId: number) {
+    const notification = this.notificationRepository.findOne({
+      where: {
+        id: notificationId,
+        receiver: { id: userId },
+      },
+    });
+    if (!notification)
+      throw new BadRequestException('Notification does not exist!');
+    return this.notificationRepository.delete({ id: notificationId });
   }
 }
