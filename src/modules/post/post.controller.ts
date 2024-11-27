@@ -39,17 +39,27 @@ export class PostController {
       postStorageOptions,
     ),
   )
-  uploadPost(
+  async uploadPost(
     @Body() uploadPostDto: UploadPostDto,
     @UploadedFiles()
     files: { thumbnail?: Express.Multer.File[]; video?: Express.Multer.File[] },
     @Request() req,
   ) {
+    const {
+      buffer: thumbnailBuffer,
+      stream: thumbnailStream,
+      ...thumbnailMetadata
+    } = files.thumbnail[0];
+    const {
+      buffer: videoBuffer,
+      stream: videoStream,
+      ...videoMetadata
+    } = files.video[0];
     const userId = req.user.id;
     return this.postService.uploadPost(
       uploadPostDto,
-      files.thumbnail[0],
-      files.video[0],
+      thumbnailMetadata as Express.Multer.File,
+      videoMetadata as Express.Multer.File,
       userId,
     );
   }

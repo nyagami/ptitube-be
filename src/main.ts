@@ -9,7 +9,9 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe());
   app.use(
-    morgan(':method :url :status :res[content-length] - :response-time ms'),
+    morgan(
+      ':method :url :status :req[range] :res[content-length] - :response-time ms',
+    ),
   );
 
   const config = new DocumentBuilder()
